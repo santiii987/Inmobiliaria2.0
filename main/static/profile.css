@@ -1,0 +1,217 @@
+.list-title{
+    text-align: left;
+    color:  rgb(126, 126, 126);
+    border-bottom:rgba(117, 117, 117, 0.657) 1px solid;
+    margin-bottom: 2rem;
+}
+@media (min-width: 1024px){ /* <1024px ********************************************************/
+.father{
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;
+}
+.profile{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+.contact-buttons{
+    display: none;
+}
+.sticky-container{
+    min-height: inherit;
+}
+.sticky-contact{
+    top: 0;
+    padding: 1rem;
+    position: -webkit-sticky;
+    position: sticky;
+    text-align: left;
+}
+.carousel{
+    width: 100%;
+    background-color: rgba(24, 24, 24, 0.363);
+}
+.carousel-item img{
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.profile-basicinfo{
+    width: 100%;
+    background-color: white;
+    padding: 3rem;
+}
+.ficha-tecnica{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.ficha-tecnica ul{
+    columns: 2;
+    width: 100%;  
+}
+.ficha-tecnica ul li{
+    width: 90%;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0;
+    border-bottom: rgba(156, 156, 156, 0.288) 1px solid;
+}
+.comodidades{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.comodidades ul{
+    columns: 3;
+    width: 100%;
+    
+}
+.comodidades ul li{
+    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+.description{
+    outline: none;
+}
+.description p{
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    outline: none;
+    margin: 5px 0;
+}
+.line{
+    width: 10vw;
+    border-bottom: rgba(156, 156, 156, 0.288) 1px solid;
+}
+.operation-type{
+    padding: 1rem;
+    border: 1px solid #cce7d6; 
+    background-color: white;
+    margin-bottom: 1rem;
+}
+.operation-type h3{
+    color: rgb(1, 167, 1);
+}
+.contactus{
+    padding: 1rem;
+    border: 1px solid #cce7d6; 
+    background-color: white;
+}
+.child{
+    margin: 1rem;
+}
+}
+@media (max-width: 1024px){ /* >1024px ********************************************************/
+.father{
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+}
+.profile{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+}
+.contact-buttons{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    justify-content: space-around;
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    padding: 0.5rem;
+    border-top: 1px solid rgb(1, 167, 1);
+    border-bottom: 1px solid rgb(1, 167, 1); 
+    align-self: center;
+}
+.contact-buttons button{
+   width: 10rem;
+}
+.sticky-contact{
+    text-align: left;
+}
+.carousel{
+    width: 100%;
+    
+}
+.carousel-item img{
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.profile-basicinfo{
+    padding: 1rem;
+    width: 100%;
+    background-color: white;
+}
+
+.ficha-tecnica{
+    display: flex;
+    flex-direction: column;
+}
+.ficha-tecnica ul{
+    padding: 0;
+}
+.ficha-tecnica ul li{
+    margin-bottom: 0.5rem;
+    padding: 0;
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: rgba(156, 156, 156, 0.288) 1px solid;
+    
+}
+.comodidades{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.comodidades ul{
+  padding: 0;
+      
+}
+.comodidades ul li{
+    justify-content: space-between;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0;
+    border-bottom: rgba(156, 156, 156, 0.288) 1px solid;
+}
+.operation-type{
+    padding: 1rem;
+    border: 1px solid rgb(1, 167, 1); 
+    background-color: white;
+    margin-bottom: 1rem;
+}
+.operation-type h3{
+    color: rgb(1, 167, 1);
+}
+.contactus{
+    padding: 1rem;
+    border: 1px solid rgb(1, 167, 1); 
+    background-color: white;
+}
+.child{
+    margin: 1rem;
+}
+}

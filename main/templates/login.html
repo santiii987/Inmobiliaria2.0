@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="father about-father">
+    <div class="child about-child">
+<form action="/login" method="POST">
+    <div class="form-group">
+      <label for="exampleInputPassword1">Usuario</label>
+      <input type="text" name="username" class="form-control" aria-describedby="emailHelp" placeholder="Escribe el usuario">
+    </div>
+    <div class="form-group">
+      <label for="exampleInputPassword1">Contraseña</label>
+      <input name="userpass" type="password" class="form-control" placeholder="Escribe la contraseña">
+    </div>
+    <button type="submit" class="btn btn-primary">Ingresar</button>
+  </form>
+</div>
+</div>
+{% endblock %}
