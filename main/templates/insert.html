@@ -1,0 +1,510 @@
+{% extends "base-admin.html" %}
+{% block content %}
+<div class="update-father">
+    <form id="insertForm" method='POST' action="/insertation" id='da-modal' enctype="multipart/form-data"
+        onsubmit='groupPhs();'>
+        {{ form.csrf_token }}
+        <div>
+            {{form.destacado.label()}}
+            {%if form.destacado.errors%}
+            {{form.destacado()}}
+            {%for error in form.destacado.errors%}
+            <strong style="color: red;"><span>{{error}}</span></strong>
+            {%endfor%}
+            {%else%}
+            {{form.destacado()}}
+            {%endif%}
+        </div>
+        <div>
+            <label for="">Titulo:</label>
+            <input name="titulo" id="titulo" type="text" maxlength="30">
+        </div>
+        <div>
+            <label for="">Ref:</label>
+            <input name="ref" id="actual_ref" type="text" maxlength="5">
+            <a class="btn button contact-enviar" onclick="check_refs()">Check ref</a><br><strong id="available" class="invisible" style="color: rgb(1, 167, 1);height: 3rem;">✔</strong>
+            <strong id="taken" class="invisible" style="color: red;">Esta ref esta en uso, elige otra</strong>
+            <select style="display: none;"  id="refs" multiple></select>
+                {% for property in get_properties %}
+                <option style="display: none;" class="ref_taken" value="{{property.ref}}">{{property.ref}}</option>
+                {% endfor %}
+              </select>
+              <script>
+                  function check_refs() {
+                      var taken = document.getElementById("taken");
+                      var available = document.getElementById("available");
+                      var actualRef = document.getElementById("actual_ref");
+                      var refs = document.querySelectorAll(".ref_taken");
+                      refsArray = []
+                    // Get value of each element
+                         refs.forEach(element => {
+                          //console.log("Elements: ",element.innerHTML)
+                          refsArray.items.add(element.innerHTML)
+                        //   if (String(element.innerHTML) == String(actualRef.value)) {
+                        //     taken.className = "visible"
+                        //     available.className = "invisible"
+                        //   } else {
+                        //     available.className = "visible"
+                        //     taken.className = "invisible"
+                        //   }
+                      });
+
+                      
+                      console.log(refsArray)
+                      console.log("Actual ref: ",actualRef.value)
+                      if (refs.indexOf(actualRef.value)) {
+                        taken.className = "visible"
+                        available.className = "invisible"
+                      } else {
+                        available.className = "visible"
+                        taken.className = "invisible"
+                      }
+                   
+                  }
+              </script>
+        </div>
+        <div>
+            {{form.precio_dolares.label()}}
+            {%if form.precio_dolares.errors%}
+            {{form.precio_dolares(oninput = 'addDot(this);')}}
+            {%for error in form.precio_dolares.errors%}
+            <strong style="color: red;"><span>{{error}}</span></strong>
+            {%endfor%}
+            {%else%}
+            {{form.precio_dolares(oninput = 'addDot(this);')}}
+            {%endif%}
+        </div>
+        <div>
+            {{form.precio_pesos.label()}}
+            {%if form.precio_pesos.errors%}
+            {{form.precio_pesos(oninput = 'addDot(this);')}}
+            {%for error in form.precio_pesos.errors%}
+            <strong style="color: red;"><span>{{error}}</span></strong>
+            {%endfor%}
+            {%else%}
+            {{form.precio_pesos(oninput = 'addDot(this);')}}
+            {%endif%}
+        </div>
+        <div class="fotos" >
+            <div class="update-fotos"
+                style="overflow-x: scroll; text-align: center;border-top: rgba(128, 128, 128, 0.363) 1px solid;border-bottom: rgba(128, 128, 128, 0.363) 1px solid;padding: 1rem;">
+                <span><h3>Fotos:  <strong><span id = "counter">0</span>/15</span></h3><span id="picErr"></span></strong>
+                <div class="first-row"></div>
+                <div class="second-row"></div>
+                <div class="third-row"></div>
+            </div>
+        </div>
+        <div class="rest-of-data" style="padding: 1rem;">
+            <label for="fotos"><strong>Ingresar Fotos</strong></label> <input required="required" id="fotos" multiple="" name="fotos"
+                onchange="readURL(this);" type="file">
+        </div>
+
+<script>
+    collection = new DataTransfer();
+    collection_mapper = []
+    addedPhs = 0
+    fotos = document.getElementsByClassName('db_foto_up').length
+    console.log(fotos)
+    document.getElementById('counter').innerHTML = fotos
+    function groupPhs() {
+        phsForm = document.getElementById('fotos')
+        phsForm.files = collection.files
+    }
+    function readURL(input) {
+        if (input.files) {
+            fotos_count = input.files.length
+            if (fotos + fotos_count > 15) {
+                window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + " fotos de mas")
+            } else {
+                var imgs = input.files
+                console.log(collection)
+                for (element of imgs) {
+                    fotos += 1
+                    collection.items.add(element)
+                    console.log(element)
+                    let reader = new FileReader();
+                    reader.onload = function (e) {
+                        addedPhs += 1
+                        collection_mapper.push(addedPhs)
+                        newPh = "<div class='new' id ='" + addedPhs + "' style='padding: 0.5rem;'> \
+                            <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                            <img src='" + e.target.result + "' class='div-foto" + addedPhs + "' height='200'> \
+                                </a> \
+                                    <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                        <input style='width:22rem' type='file' class = '" + addedPhs + "' onchange='changeNew(this);'> \
+                                        <a href='#' class = '" + addedPhs + "' onclick='deleteNew(this);'>Eliminar foto</a> </div> </div> </div>"
+
+                        first = $('.first-row').children().length
+                        second = $('.second-row').children().length
+                        third = $('.third-row').children().length
+                        if (first < 5) {
+                            $('.first-row').append(newPh)
+                        } else if (second < 5) {
+                            $('.second-row').append(newPh)
+                        } else {
+                            $('.third-row').append(newPh)
+                        }
+                        counter = document.getElementById('counter').innerHTML = fotos;
+                    };
+                    reader.readAsDataURL(element);
+                }
+            }
+        }
+    }
+
+    function deleteNew(input) {
+        fotos += -1
+        $('#counter').html(fotos)
+        i = 0
+        while (collection_mapper[i] != input.classList[0]) {
+            i++
+        }
+        collection_aux = new DataTransfer
+        coll_len = collection.files.length
+        for (var j = 0; j < coll_len; j++) {
+            if (j == i) {
+                continue
+            } else {
+                collection_aux.items.add(collection.files[j])
+            }
+
+        }
+        collection = collection_aux
+        collection_mapper.splice(i, 1)
+        console.log(collection.files)
+        document.getElementById(input.classList[0]).remove();
+    }
+    function changeNew(input) {
+        if (input.files) {
+            reader = new FileReader
+            reader.onload = (e) => {
+                console.log(input.classList[0])
+                $('.div-foto' + input.classList[0]).attr('src', e.target.result)
+            }
+            reader.readAsDataURL(input.files[0])
+            i = 0
+            while (collection_mapper[i] != input.classList[0]) {
+                i++
+            }
+            collection_aux = new DataTransfer
+            coll_len = collection.files.length
+            for (var j = 0; j < coll_len; j++) {
+                if (j == i) {
+                    collection_aux.items.add(input.files[0])
+                } else {
+                    collection_aux.items.add(collection.files[j])
+                }
+
+            }
+            collection = collection_aux
+            console.log(collection_aux, collection.files, collection_mapper, input.files[0])
+        }
+
+    }
+</script>
+<label>Propietarios:</label>
+<select onchange="getProp(this.value)">
+    <option value='   '></option>
+    {% for propietario in propietarios%}
+    <!-- El nombre no puede tener espacios ni el apellido -->
+    <option value="{{propietario.nombre}} {{propietario.apellido}} {{propietario.telefono}} {{propietario.email}}">
+        {{propietario.nombre}} {{propietario.apellido}} {{propietario.telefono}}</option>
+    {%endfor%}
+</select>
+<div>
+    {{form.nombre.label()}}
+    {%if form.nombre.errors%}
+    {{form.nombre()}}
+    {%for error in form.nombre.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.nombre()}}
+    {%endif%}
+</div>
+<div>
+    {{form.apellido.label()}}
+    {%if form.apellido.errors%}
+    {{form.apellido()}}
+    {%for error in form.apellido.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.apellido()}}
+    {%endif%}
+</div>
+<div>
+    {{form.telefono.label()}}
+    {%if form.telefono.errors%}
+    {{form.telefono()}}
+    {%for error in form.telefono.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.telefono()}}
+    {%endif%}
+</div>
+<div>
+    {{form.email.label()}}
+    {%if form.email.errors%}
+    {{form.email()}}
+    {%for error in form.email.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.email()}}
+    {%endif%}
+</div>
+<script>
+    function getProp(prop) {
+        datos = prop.split(" ")
+        document.getElementById('nombre').value = datos[0]
+        document.getElementById("apellido").value = datos[1]
+        document.getElementById("email").value = datos[3]
+        document.getElementById("telefono").value = datos[2]
+        console.log(prop, document.getElementById('nombre'))
+
+    }
+</script>
+<div>
+    {{form.metraje_edificio.label()}}
+    {%if form.metraje_edificio.errors%}
+    {{form.metraje_edificio()}}
+    {%for error in form.metraje_edificio.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.metraje_edificio()}}
+    {%endif%}
+</div>
+<div>
+    {{form.metraje_patio.label()}}
+    {%if form.metraje_patio.errors%}
+    {{form.metraje_patio()}}
+    {%for error in form.metraje_patio.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.metraje_patio()}}
+    {%endif%}
+</div>
+<div>
+    {{form.operacion.label()}}
+    {%if form.operacion.errors%}
+    {{form.operacion()}}
+    {%for error in form.operacion.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.operacion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.tipo_propiedad.label()}}
+    {%if form.tipo_propiedad.errors%}
+    {{form.tipo_propiedad()}}
+    {%for error in form.tipo_propiedad.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.tipo_propiedad()}}
+    {%endif%}
+</div>
+<div>
+    {{form.barrio.label()}}
+    {%if form.barrio.errors%}
+    {{form.barrio()}}
+    {%for error in form.barrio.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.barrio()}}
+    {%endif%}
+</div>
+<div>
+    {{form.sobre.label()}}
+    {%if form.sobre.errors%}
+    {{form.sobre()}}
+    {%for error in form.sobre.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.sobre()}}
+    {%endif%}
+</div>
+<div>
+    {{form.direccion.label()}}
+    {%if form.direccion.errors%}
+    {{form.direccion()}}
+    {%for error in form.direccion.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.direccion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.baños.label()}}
+    {%if form.baños.errors%}
+    {{form.baños()}}
+    {%for error in form.baños.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.baños()}}
+    {%endif%}
+</div>
+<div>
+    {{form.estado.label()}}
+    {%if form.estado.errors%}
+    {{form.estado()}}
+    {%for error in form.estado.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.estado()}}
+    {%endif%}
+</div>
+<div>
+    {{form.distancia_al_mar.label()}}
+    {%if form.distancia_al_mar.errors%}
+    {{form.distancia_al_mar()}}
+    {%for error in form.distancia_al_mar.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.distancia_al_mar()}}
+    {%endif%}
+</div>
+<div>
+    {{form.dormitorios.label()}}
+    {%if form.dormitorios.errors%}
+    {{form.dormitorios()}}
+    {%for error in form.dormitorios.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.dormitorios()}}
+    {%endif%}
+</div>
+<div>
+    {{form.orientacion.label()}}
+    {%if form.orientacion.errors%}
+    {{form.orientacion()}}
+    {%for error in form.orientacion.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.orientacion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.disposicion.label()}}
+    {%if form.disposicion.errors%}
+    {{form.disposicion()}}
+    {%for error in form.disposicion.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.disposicion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.garaje.label()}}
+    {%if form.garaje.errors%}
+    {{form.garaje()}}
+    {%for error in form.garaje.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.garaje()}}
+    {%endif%}
+</div>
+<div>
+    {{form.n_plantas.label()}}
+    {%if form.n_plantas.errors%}
+    {{form.n_plantas()}}
+    {%for error in form.n_plantas.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.n_plantas()}}
+    {%endif%}
+    </div>
+    <div>
+        {{form.financia.label()}}
+        {%if form.financia.errors%}
+        {{form.financia()}}
+        {%for error in form.financia.errors%}
+        <strong style="color: red;"><span>{{error}}</span></strong>
+        {%endfor%}
+        {%else%}
+        {{form.financia()}}
+        {%endif%}
+    </div>
+    <div>
+        {{form.permuta.label()}}
+        {%if form.permuta.errors%}
+        {{form.permuta()}}
+        {%for error in form.permuta.errors%}
+        <strong style="color: red;"><span>{{error}}</span></strong>
+        {%endfor%}
+        {%else%}
+        {{form.permuta()}}
+        {%endif%}
+    </div>
+
+    <br>
+    <div class="comfort-security" styles="background-color: black;">
+        <h3>Confort:</h3>
+        <div class="comfort" styles="background-color: black;">
+            {{form.comfort.hidden_tag()}}
+            {%for comfort in form.comfort if comfort.widget.input_type != 'hidden'%}
+            {{comfort.label()}}
+            {{comfort()}}<br>
+            {%endfor%}
+        </div>
+        <br>
+        <h3>Seguridad:</h3>
+        <div class="security">
+            {{form.seguridad.hidden_tag()}}
+            {%for seguridad in form.seguridad if seguridad.widget.input_type != 'hidden'%}
+            {{seguridad.label()}}
+            {{seguridad()}}<br>
+            {%endfor%}
+        </div>
+    </div>
+    <br>
+    <h3>Descripción:</h3>
+    <div>
+        {%if form.descripcion.errors%}
+        {{form.descripcion()}}
+        {%for error in form.descripcion.errors%}
+        <strong style="color: red;"><span>{{error}}</span></strong>
+        {%endfor%}
+        {%else%}
+        {{form.descripcion()}}
+        {%endif%}
+    </div>
+</form>
+<script>
+    function fotoCheck() {
+        var fotos = document.getElementById("counter");
+        var form = document.getElementById("insertForm");
+        if (fotos.innerHTML == 0) {
+            window.alert("Es necesario agregar al menos una foto");
+        } else {
+            form.submit()
+        }
+        
+    }
+</script>
+    <div id="testing" class="modal-footer">
+        <a type="button" class="btn button contact-enviar" style="background-color:grey" href="/admin/home">Cerrar</a>
+        <button onclick="fotoCheck()" class="btn button contact-enviar">Insertar</button>
+        <div>
+        </div>
+    </div>
+  
+    {% endblock %}
