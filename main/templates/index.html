@@ -14,6 +14,7 @@
           <option >Casa</option>
           <option >Apartamento</option>
           <option >Oficina</option>
+          <option >Depósito</option>
       </select>
       <select placeholder="Habitaciones" name="dormitorios" class="custom-select  " id="inlineFormCustomSelectPref">
           <option value=''>Habitaciones</option>
@@ -36,8 +37,7 @@
         {% endfor %}
     </select>
       <select name="currency" class="custom-select  " id="inlineFormCustomSelectPref">
-        <option selected value=""> U$S/$ </option>
-        <option value="precio_dolares"> U$S </option>
+        <option selected value="precio_dolares"> U$S </option>
         <option value="precio_pesos"> $ </option>
     </select>
   </div>
@@ -55,17 +55,70 @@
 {% endblock %}
 {% block content %}
 <div class="index_div">
-    <h2 style="color: grey;">Propiedades destacadas</h2>
 
-  <div class="column"><!-- Column 1 -->
-    
+<div class="division">
+  <div class="column index-column-1">
+
+    <ul class="nav nav-tabs index-nav" id="myTab" role="tablist">
+      <li class="nav-item" >
+        <a class="nav-link active" style="color:rgb(1, 167, 1);" id="home-tab" data-toggle="tab" href="#buy" role="tab" aria-controls="home" aria-selected="true">Comprar</a>
+      </li>
+      <li class="nav-item" >
+        <a class="nav-link" style="color:rgb(1, 167, 1);" id="profile-tab" data-toggle="tab" href="#sell" role="tab" aria-controls="profile" aria-selected="false">Vender</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" style="color:rgb(1, 167, 1);" id="contact-tab" data-toggle="tab" href="#rent" role="tab" aria-controls="contact" aria-selected="false">Alquilar</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" style="color:rgb(1, 167, 1);" id="admin-tab" data-toggle="tab" href="#admin" role="tab" aria-controls="contact" aria-selected="false">Administrar</a>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+
+      <div class="tab-pane fade show active" id="buy" role="tabpanel" aria-labelledby="home-tab"><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
+        Rem suscipit quia molestias ad perspiciatis hic odit <br> 
+        blanditiis consequatur 
+        eveniet harum ea pariatur, est voluptate ab, fuga repudiandae a! Iusto, pariatur!
+      </p></div>
+
+      <div class="tab-pane fade" id="sell" role="tabpanel" aria-labelledby="profile-tab"><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
+        Rem suscipit quia molestias ad perspiciatis hic odit <br> 
+        blanditiis consequatur 
+        eveniet harum ea pariatur, est voluptate ab, fuga repudiandae a! Iusto, pariatur!
+      </p></div>
+
+      <div class="tab-pane fade" id="rent" role="tabpanel" aria-labelledby="contact-tab"><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
+        Rem suscipit quia molestias ad perspiciatis hic odit <br> 
+        blanditiis consequatur 
+        eveniet harum ea pariatur, est voluptate ab, fuga repudiandae a! Iusto, pariatur!
+      </p></div>
+
+      <div class="tab-pane fade" id="admin" role="tabpanel" aria-labelledby="admin-tab"><p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
+        Rem suscipit quia molestias ad perspiciatis hic odit <br> 
+        blanditiis consequatur 
+        eveniet harum ea pariatur, est voluptate ab, fuga repudiandae a! Iusto, pariatur!
+      </p></div>
+      
+    </div>
+  </div>
+</div>
+
+<div class="division">
+  <div class="column index-column-2"><!-- Column 1 -->
+    <h2 style="color: rgb(1, 167, 1);">Propiedades destacadas</h2>
+    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
+      Rem suscipit quia molestias ad perspiciatis hic odit <br> 
+      blanditiis consequatur 
+      eveniet harum ea pariatur, est voluptate ab, fuga repudiandae a! Iusto, pariatur!
+    </p>
     {% for array in get_properties %}
     <ul>
     {% for propiedades in array %}
     <li>
     <a class="card_link" href="/profile/{{propiedades[0].id}}">
     <div class="cards" >
-      <img src="data:image/png;base64,{{ propiedades[1] }}" class="card-img-top" alt="...">
+      <img src="data:image/png;base64,{{ propiedades[1][propiedades[2]] }}" class="card-img-top" alt="...">
       <div class="card-label" style="display: flex; background-color: rgba(1, 167, 1, 0.404); vertical-align: middle;">
       <h4 style="text-align: justify;margin-left: 1rem; margin-top: auto; margin-bottom: auto; color: white; overflow: hidden;text-overflow: ellipsis;font-size: 130%;" class="card-text" >{{ propiedades[0].titulo}} </h4>
       </div>
@@ -73,15 +126,15 @@
         <h5>{{propiedades[0].operaciones.operacion}}</h5>
         {% if propiedades[0].operaciones.operacion == "Venta" %}
                     {%if propiedades[0].precio_dolares != none%}
-                    <h4 class="$venta" style="display: flex;flex-direction: row;">U$S <br> <p class="number_dots">{{ propiedades[0].precio_dolares }}</p></h4>
+                    <h4 class="$venta" style="display: flex;flex-direction: row;">u$s<p class="number_dots" style="margin-left:5px;">{{ propiedades[0].precio_dolares }}</p></h4>
                     {% else %}
-                    <h4 class="$venta" style="display: flex;flex-direction: row;">$ <br><p class="number_dots">{{ propiedades[0].precio_pesos }}</p></h4>
+                    <h4 class="$venta" style="display: flex;flex-direction: row;">$<p class="number_dots"style="margin-left:5px;">{{ propiedades[0].precio_pesos }}</p></h4>
                     {%endif%}
                 {% else %}
                     {%if propiedades[0].precio_pesos != none %}
-                    <h4 class="$alquiler" style="display: flex;flex-direction: row;">$ <br><p class="number_dots">{{ propiedades[0].precio_pesos }}</p></h4>
+                    <h4 class="$alquiler" style="display: flex;flex-direction: row;">$<p class="number_dots"style="margin-left:5px;">{{ propiedades[0].precio_pesos }}</p></h4>
                     {% else %}
-                    <h4 class="$alquiler" style="display: flex;flex-direction: row;">U$S <br><p class="number_dots" >{{ propiedades[0].precio_dolares }}</p></h4>
+                    <h4 class="$alquiler" style="display: flex;flex-direction: row;">u$s<p class="number_dots" style="margin-left:5px;">{{ propiedades[0].precio_dolares }}</p></h4>
                     {% endif %}
                 {% endif %}
             <p><i style="color:rgb(1, 167, 1);" class="fas fa-bath"></i> {{ propiedades[0].baños }} • <i style="color:rgb(1, 167, 1);" class="fas fa-bed"></i> {{ propiedades[0].dormitorios }} • 
@@ -95,51 +148,19 @@
       {% endfor%}
     </ul>
       {% endfor%}
+      <a href="#"><h5>Ver más</h5></a>
 </div>
-<div class="pages">
-  {% if p_search == True%}
-    {% if pagina == paginas and pagina == 1%}
-      <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>   
-    {% elif pagina == paginas%}
-      <a href="/p_search/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/p_search/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border:rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>
-    {% elif pagina == 1%}
-      <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/p_search/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/p_search/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-    {% else %}
-     <a href="/p_search/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/p_search/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/p_search/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/p_search/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-    {% endif %}
-  {% elif ventas == True %}
-    {% if pagina == paginas and pagina == 1%}
-    <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>   
-    {% elif pagina == paginas%}
-    <a href="/ventas/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/ventas/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border:rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>
-    {% elif pagina == 1%}
-    <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/ventas/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/ventas/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-    {% else %}
-    <a href="/ventas/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/ventas/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/ventas/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/ventas/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-    {% endif %}
-  {% elif alquiler == True %}
-    {% if pagina == paginas and pagina == 1%}
-    <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>   
-    {% elif pagina == paginas%}
-    <a href="/alquiler/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/alquiler/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border:rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>
-    {% elif pagina == 1%}
-    <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/alquiler/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/alquiler/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-    {% else %}
-    <a href="/alquiler/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/alquiler/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/alquiler/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/alquiler/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-    {% endif %}
-  {% else %}
-      {% if pagina == paginas and pagina == 1%}
-        <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>   
-      {% elif pagina == paginas%}
-        <a href="/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border:rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a>
-      {% elif pagina == 1%}
-        <a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-      {% else %}
-        <a href="/{{pagina-1}}/0/{{get_properties[0][0][0].id}}">Anterior</a> <a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/{{pagina-1}}/0/{{get_properties[0][0][0].id}}'>{{pagina-1}}</a><a style="color:rgb(1, 167, 1); border: rgb(1, 167, 1) 1px solid; border-radius: 20%;" href=''>{{pagina}}</a><a style="border: rgb(197, 197, 197) 1px solid; border-radius: 20%;" href='/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}'>{{pagina+1}}</a> <a href="/{{pagina+1}}/1/{{get_properties[get_properties|length - 1][get_properties[get_properties|length - 1]|length - 1][0].id}}">Siguiente</a>
-      {% endif %}
-  {% endif %}
-  </div>
 
+<div class="column index-column-3"><!-- Column 1 -->
+ <h2 style="color: rgb(1, 167, 1);"> Nuevas propiedades </h2>
+ <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. 
+  Rem suscipit quia molestias ad perspiciatis hic odit <br> 
+  blanditiis consequatur 
+  eveniet harum ea pariatur, est voluptate ab, fuga repudiandae a! Iusto, pariatur!
+</p>
+</div>
+
+</div>
 <script> 
   var target = document.querySelectorAll(".number_dots");
     target.forEach(element => {
@@ -165,6 +186,6 @@
             element.innerHTML = priceDot
           } 
     });
-    </script>
+</script>
 </div>
 {% endblock %}
