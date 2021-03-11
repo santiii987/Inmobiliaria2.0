@@ -3,8 +3,8 @@
     <div class="banner">
         <div class="matrix"></div>
     <div id="move-out" class="banner-p slide-in div404">
-        <h1 style="text-align: left;width: 100%;color: white;text-shadow: black 2px 2px;">Una cosa es cierta, <br>las propiedades 
-            <strong style="color:rgb(1, 167, 1);text-shadow: white 2px 2px;">no</strong>  quiebran.</h1>
+        <h3 style="text-align: left;width: 100%;color: white;text-shadow: black 3px 3px;">Una cosa es cierta, las propiedades 
+            <strong style="color:rgb(1, 167, 1);text-shadow: white 3px 3px;">no</strong>  quiebran.</h3>
         </div>
     </div>
     {% endblock %}
@@ -14,7 +14,7 @@
 <div class="father" style="margin-top:5rem ;">
         <div class="special-division object invisible division-0">
         <div class="title">
-            <h1>Nuestras propiedades destacadas:</h1>
+            <h1>Propiedades destacadas:</h1>
         </div>
         <div class="description">
             <p>
@@ -22,6 +22,7 @@
             </p>
         </div>
     </div>
+    <div class="special-division" style="margin-top:5rem ">
             {% for array in get_properties %}
             <div class="grid-container object">
             {% for propiedades in array %}
@@ -32,15 +33,15 @@
                         <br>
                         {{propiedades[0].operaciones.operacion}}: {% if propiedades[0].operaciones.operacion == "Venta" %}
                         {%if propiedades[0].precio_dolares != none%}
-                        u$s<strong class="number_dots" style="width: 100%;"> {{ propiedades[0].precio_dolares }}</strong>
+                        u$s&nbsp;<strong class="number_dots" style="width: 100%;">{{ propiedades[0].precio_dolares }}</strong>
                         {% else %}
-                        $<strong class="number_dots"style="width: 100%;"> {{ propiedades[0].precio_pesos }}</strong>
+                        $&nbsp;<strong class="number_dots"style="width: 100%;">{{ propiedades[0].precio_pesos }}</strong>
                         {%endif%}
                     {% else %}
                         {%if propiedades[0].precio_pesos != none %}
-                        $<strong class="number_dots"style="width: 100%;"> {{ propiedades[0].precio_pesos }}</strong>
+                        $&nbsp;<strong class="number_dots"style="width: 100%;">{{ propiedades[0].precio_pesos }}</strong>
                         {% else %}
-                        u$s<strong class="number_dots" style="width: 100%;"> {{ propiedades[0].precio_dolares }}</strong>
+                        u$s&nbsp;<strong class="number_dots" style="width: 100%;">{{ propiedades[0].precio_dolares }}</strong>
                         {% endif %}
                     {% endif %}
                     </div>
@@ -57,6 +58,8 @@
             {%endfor%}
           </div>
           {%endfor%}
+        </div>
+        <a href="" class="more-props object invisible"><h3> Ver más propiedades </h3></a>
 </div>
 <script> 
     var target = document.querySelectorAll(".number_dots");

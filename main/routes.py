@@ -396,7 +396,7 @@ def index():
     p_show = properties_mtx(get_properties,3)
     #print(p_show[0])
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
-    return render_template('index.html', barrios = barrios_query, 
+    return render_template('index-premium.html', barrios = barrios_query, 
     get_properties = p_show, paginas = paginas, pagina = 1)
 
 @app.route('/<int:page>/<int:step>/<int:id>')

@@ -80,11 +80,11 @@ img {vertical-align: middle;}
     margin-bottom: 2rem;
 }
 @media (min-width: 1024px){ /* <1024px ********************************************************/
-    .father-profile{
-        width: 100%;
-        padding: 1rem;
-        display: flex;
-        flex-direction: row;}
+.father-profile{
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: row;}
 .profile{
     width: 100%;
     display: flex;
@@ -160,10 +160,7 @@ img {vertical-align: middle;}
     outline: none;
     margin: 5px 0;
 }
-.line{
-    width: 10vw;
-    border-bottom: rgba(156, 156, 156, 0.288) 1px solid;
-}
+
 .operation-type{
     padding: 1rem;
     border: 1px solid #cce7d6; 
