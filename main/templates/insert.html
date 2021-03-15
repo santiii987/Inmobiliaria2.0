@@ -1,9 +1,11 @@
 {% extends "base-admin.html" %}
 {% block content %}
 <div class="update-father">
-    <form id="insertForm" method='POST' action="/insertation" id='da-modal' enctype="multipart/form-data"
+    <form class="insert-form" id="insertForm" method='POST' action="/insertation" id='da-modal' enctype="multipart/form-data"
         onsubmit='groupPhs();'>
+        <div class="column" style="margin-bottom: 1rem;"><!-- Column 1 -->
         {{ form.csrf_token }}
+        
         <div>
             {{form.destacado.label()}}
             {%if form.destacado.errors%}
@@ -15,76 +17,60 @@
             {{form.destacado()}}
             {%endif%}
         </div>
-        <div>
-            <label for="">Titulo:</label>
-            <input name="titulo" id="titulo" type="text" maxlength="30">
-        </div>
+        <div class="group"><!-- Group 1 -->
         <div>
             <label for="">Ref:</label>
-            <input name="ref" id="actual_ref" type="text" maxlength="5">
-            <a class="btn button contact-enviar" onclick="check_refs()">Check ref</a><br><strong id="available" class="invisible" style="color: rgb(1, 167, 1);height: 3rem;">✔</strong>
-            <strong id="taken" class="invisible" style="color: red;">Esta ref esta en uso, elige otra</strong>
+            <input onkeyup="checkRefs()" name="ref" id="actual_ref" type="text" maxlength="5"><strong id="availability"></strong>
+            <!--<br>
+             <a href="#" onclick="">Chequear disponibilidad de referencia.</a> 
+            <br><br>-->
             <select style="display: none;"  id="refs" multiple></select>
                 {% for property in get_properties %}
                 <option style="display: none;" class="ref_taken" value="{{property.ref}}">{{property.ref}}</option>
                 {% endfor %}
               </select>
-              <script>
-                  function check_refs() {
-                      var taken = document.getElementById("taken");
-                      var available = document.getElementById("available");
-                      var actualRef = document.getElementById("actual_ref");
-                      var refs = document.querySelectorAll(".ref_taken");
-                      refsArray = []
-                    // Get value of each element
-                         refs.forEach(element => {
-                          //console.log("Elements: ",element.innerHTML)
-                          refsArray.items.add(element.innerHTML)
-                        //   if (String(element.innerHTML) == String(actualRef.value)) {
-                        //     taken.className = "visible"
-                        //     available.className = "invisible"
-                        //   } else {
-                        //     available.className = "visible"
-                        //     taken.className = "invisible"
-                        //   }
-                      });
+        </div>
 
-                      
-                      console.log(refsArray)
-                      console.log("Actual ref: ",actualRef.value)
-                      if (refs.indexOf(actualRef.value)) {
-                        taken.className = "visible"
-                        available.className = "invisible"
-                      } else {
-                        available.className = "visible"
-                        taken.className = "invisible"
-                      }
-                   
-                  }
-              </script>
+        <div>
+            <label for="">Titulo:</label>
+            <input name="titulo" id="titulo" type="text" maxlength="30">
+        </div>
+        <div>
+            {{form.operacion.label()}}
+            {%if form.operacion.errors%}
+            {{form.operacion()}}
+            {%for error in form.operacion.errors%}
+            <strong style="color: red;"><span>{{error}}</span></strong>
+            {%endfor%}
+            {%else%}
+            {{form.operacion()}}
+            {%endif%}
         </div>
         <div>
             {{form.precio_dolares.label()}}
             {%if form.precio_dolares.errors%}
-            {{form.precio_dolares(oninput = 'addDot(this);')}}
+            {{form.precio_dolares()}}
             {%for error in form.precio_dolares.errors%}
             <strong style="color: red;"><span>{{error}}</span></strong>
             {%endfor%}
             {%else%}
-            {{form.precio_dolares(oninput = 'addDot(this);')}}
+            {{form.precio_dolares()}}
             {%endif%}
         </div>
+
         <div>
             {{form.precio_pesos.label()}}
             {%if form.precio_pesos.errors%}
-            {{form.precio_pesos(oninput = 'addDot(this);')}}
+            {{form.precio_pesos()}}
             {%for error in form.precio_pesos.errors%}
             <strong style="color: red;"><span>{{error}}</span></strong>
             {%endfor%}
             {%else%}
-            {{form.precio_pesos(oninput = 'addDot(this);')}}
+            {{form.precio_pesos()}}
             {%endif%}
         </div>
+        </div><!-- /Group 1 -->
+        <div class="line"></div>
         <div class="fotos" >
             <div class="update-fotos"
                 style="overflow-x: scroll; text-align: center;border-top: rgba(128, 128, 128, 0.363) 1px solid;border-bottom: rgba(128, 128, 128, 0.363) 1px solid;padding: 1rem;">
@@ -98,13 +84,14 @@
             <label for="fotos"><strong>Ingresar Fotos</strong></label> <input required="required" id="fotos" multiple="" name="fotos"
                 onchange="readURL(this);" type="file">
         </div>
-
+        <a id="next-one" onclick="nextStep(2)" style="color: rgb(1, 167, 1);" href="#column-two">| Siguiente >></a>
+    </div><!-- /Column 1 -->
 <script>
     collection = new DataTransfer();
     collection_mapper = []
     addedPhs = 0
     fotos = document.getElementsByClassName('db_foto_up').length
-    console.log(fotos)
+    console.log("Fotos: ", fotos)
     document.getElementById('counter').innerHTML = fotos
     function groupPhs() {
         phsForm = document.getElementById('fotos')
@@ -203,8 +190,86 @@
 
     }
 </script>
+
+<script>
+function nextStep(step) {
+    //Step 2
+    var ref = document.getElementById("actual_ref");
+    var usd = document.getElementById("precio_dolares");
+    var pesos = document.getElementById("precio_pesos");
+    var title = document.getElementById("titulo");
+    var nextOne = document.getElementById("next-one");
+    var fotos = document.getElementById("counter");
+    var form = document.getElementById("insertForm");
+    var availability = document.getElementById("availability");
+    //Step 3
+    var name = document.getElementById("nombre");
+    var lastname = document.getElementById("apellido");
+    var tel = document.getElementById("telefono");
+    var email = document.getElementById("email");
+    var nextTwo = document.getElementById("next-two");
+    //Step 4
+    var metrajeEdif = document.getElementById("metraje_edificio");
+    var direccion = document.getElementById("direccion");
+    var nextThree = document.getElementById("next-three");
+    //Step 5
+    
+    if (step == 2) {
+        if (fotos.innerHTML == 0) {
+            window.alert("Es necesario agregar al menos una foto");
+        } else if (ref.value == "" ) {
+            window.alert("Inserta una referencia");
+            console.log(ref.value)
+        } else if (title.value == "") {
+            window.alert("Escribe un título para la propiedad");
+            console.log(title.innerHTML)
+        } else if (usd.value == "" && pesos.value == "") {
+            window.alert("Inserta el precio de la propiedad");
+            console.log("Dolares: ",usd.value,"Pesos: ", pesos.value)
+        } 
+        else {
+            document.getElementById("column-two").classList.remove("inactive");
+            document.getElementById("column-two").classList.add("column");
+            nextOne.remove()
+        }
+        
+        
+    } else if (step == 3) {
+        if (name.value == "") {
+            window.alert("Ingresa nombre de propietario");
+        } else if (lastname.value == "") {
+            window.alert("Inserta apellido del propietario");
+        } else if (tel.value == "") {
+            window.alert("Escribe un numero de telefono de propietario");
+        } else if (email.value == "") {
+            window.alert("Inserta email del propietario");
+        }
+        else {
+            document.getElementById("column-three").classList.remove("inactive");
+            document.getElementById("column-three").classList.add("column");
+            nextTwo.remove()
+        }
+        
+    } else if (step == 4) {
+        if (metrajeEdif.value == "") {
+            window.alert("Ingresa metraje de planta");
+        } else if (direccion.value == "") {
+            window.alert("Escribe una dirección");
+        } else {
+        document.getElementById("column-four").classList.remove("inactive");
+        document.getElementById("column-four").classList.add("column");
+        nextThree.remove()
+        // Insert div
+        document.getElementById("insert-button").classList.remove("inactive");
+        //document.getElementById("insert-button").classList.add("active");
+    } 
+}
+}
+</script>
+
+<div id="column-two" class="fade-in inactive" style="margin-bottom: 1rem;"><!-- Column 2 -->
 <label>Propietarios:</label>
-<select onchange="getProp(this.value)">
+<select onchange="getProp(this.value)" style="margin-bottom: 0.5rem;">
     <option value='   '></option>
     {% for propietario in propietarios%}
     <!-- El nombre no puede tener espacios ni el apellido -->
@@ -212,6 +277,8 @@
         {{propietario.nombre}} {{propietario.apellido}} {{propietario.telefono}}</option>
     {%endfor%}
 </select>
+<div class="line"></div>
+<div class="group"><!-- Group 1 -->
 <div>
     {{form.nombre.label()}}
     {%if form.nombre.errors%}
@@ -256,6 +323,11 @@
     {{form.email()}}
     {%endif%}
 </div>
+</div><!-- /Group 1 -->
+<a id="next-two" onclick="nextStep(3)" style="color: rgb(1, 167, 1);" href="#column-three">| Siguiente >></a>
+</div>
+
+<div id="column-three" class="fade-in inactive" style="margin-bottom: 1rem;"><!-- Column 3 -->
 <script>
     function getProp(prop) {
         datos = prop.split(" ")
@@ -267,6 +339,7 @@
 
     }
 </script>
+<div class="group"><!-- Group 1 -->
 <div>
     {{form.metraje_edificio.label()}}
     {%if form.metraje_edificio.errors%}
@@ -290,25 +363,14 @@
     {%endif%}
 </div>
 <div>
-    {{form.operacion.label()}}
-    {%if form.operacion.errors%}
-    {{form.operacion()}}
-    {%for error in form.operacion.errors%}
+    {{form.direccion.label()}}
+    {%if form.direccion.errors%}
+    {{form.direccion()}}
+    {%for error in form.direccion.errors%}
     <strong style="color: red;"><span>{{error}}</span></strong>
     {%endfor%}
     {%else%}
-    {{form.operacion()}}
-    {%endif%}
-</div>
-<div>
-    {{form.tipo_propiedad.label()}}
-    {%if form.tipo_propiedad.errors%}
-    {{form.tipo_propiedad()}}
-    {%for error in form.tipo_propiedad.errors%}
-    <strong style="color: red;"><span>{{error}}</span></strong>
-    {%endfor%}
-    {%else%}
-    {{form.tipo_propiedad()}}
+    {{form.direccion()}}
     {%endif%}
 </div>
 <div>
@@ -322,37 +384,18 @@
     {{form.barrio()}}
     {%endif%}
 </div>
+</div><!-- Group 1 -->
+<div class="line"></div>
+<div class="group"><!-- Group 2 -->
 <div>
-    {{form.sobre.label()}}
-    {%if form.sobre.errors%}
-    {{form.sobre()}}
-    {%for error in form.sobre.errors%}
+    {{form.tipo_propiedad.label()}}
+    {%if form.tipo_propiedad.errors%}
+    {{form.tipo_propiedad()}}
+    {%for error in form.tipo_propiedad.errors%}
     <strong style="color: red;"><span>{{error}}</span></strong>
     {%endfor%}
     {%else%}
-    {{form.sobre()}}
-    {%endif%}
-</div>
-<div>
-    {{form.direccion.label()}}
-    {%if form.direccion.errors%}
-    {{form.direccion()}}
-    {%for error in form.direccion.errors%}
-    <strong style="color: red;"><span>{{error}}</span></strong>
-    {%endfor%}
-    {%else%}
-    {{form.direccion()}}
-    {%endif%}
-</div>
-<div>
-    {{form.baños.label()}}
-    {%if form.baños.errors%}
-    {{form.baños()}}
-    {%for error in form.baños.errors%}
-    <strong style="color: red;"><span>{{error}}</span></strong>
-    {%endfor%}
-    {%else%}
-    {{form.baños()}}
+    {{form.tipo_propiedad()}}
     {%endif%}
 </div>
 <div>
@@ -366,6 +409,45 @@
     {{form.estado()}}
     {%endif%}
 </div>
+<div>
+    {{form.disposicion.label()}}
+    {%if form.disposicion.errors%}
+    {{form.disposicion()}}
+    {%for error in form.disposicion.errors%}
+    <strong style="color: red;"><span>{{error}}</span></strong>
+    {%endfor%}
+    {%else%}
+    {{form.disposicion()}}
+    {%endif%}
+</div>
+
+
+    <div>
+        {{form.sobre.label()}}
+        {%if form.sobre.errors%}
+        {{form.sobre()}}
+        {%for error in form.sobre.errors%}
+        <strong style="color: red;"><span>{{error}}</span></strong>
+        {%endfor%}
+        {%else%}
+        {{form.sobre()}}
+        {%endif%}
+    </div>
+    
+    <div>
+        {{form.baños.label()}}
+        {%if form.baños.errors%}
+        {{form.baños()}}
+        {%for error in form.baños.errors%}
+        <strong style="color: red;"><span>{{error}}</span></strong>
+        {%endfor%}
+        {%else%}
+        {{form.baños()}}
+        {%endif%}
+    </div>
+</div><!-- /Group 2 -->
+<div class="line"></div>
+<div class="group"><!-- Group 3 -->
 <div>
     {{form.distancia_al_mar.label()}}
     {%if form.distancia_al_mar.errors%}
@@ -399,17 +481,8 @@
     {{form.orientacion()}}
     {%endif%}
 </div>
-<div>
-    {{form.disposicion.label()}}
-    {%if form.disposicion.errors%}
-    {{form.disposicion()}}
-    {%for error in form.disposicion.errors%}
-    <strong style="color: red;"><span>{{error}}</span></strong>
-    {%endfor%}
-    {%else%}
-    {{form.disposicion()}}
-    {%endif%}
-</div>
+
+
 <div>
     {{form.garaje.label()}}
     {%if form.garaje.errors%}
@@ -421,6 +494,7 @@
     {{form.garaje()}}
     {%endif%}
 </div>
+
 <div>
     {{form.n_plantas.label()}}
     {%if form.n_plantas.errors%}
@@ -432,6 +506,8 @@
     {{form.n_plantas()}}
     {%endif%}
     </div>
+</div><!-- /Group 3 -->
+<div class="line"></div>
     <div>
         {{form.financia.label()}}
         {%if form.financia.errors%}
@@ -454,9 +530,15 @@
         {{form.permuta()}}
         {%endif%}
     </div>
+<a id="next-three" onclick="nextStep(4), insertButton()" style="color: rgb(1, 167, 1);" href="#column-four">| Siguiente >></a>
+</div><!-- /Column 4 -->
 
+<div id="column-four" class="fade-in inactive" style="margin-bottom: 1rem;"><!-- Column 4 -->
     <br>
+    
     <div class="comfort-security" styles="background-color: black;">
+        <div class="group">
+            <div>
         <h3>Confort:</h3>
         <div class="comfort" styles="background-color: black;">
             {{form.comfort.hidden_tag()}}
@@ -465,7 +547,9 @@
             {{comfort()}}<br>
             {%endfor%}
         </div>
+    </div>
         <br>
+        <div>
         <h3>Seguridad:</h3>
         <div class="security">
             {{form.seguridad.hidden_tag()}}
@@ -474,12 +558,12 @@
             {{seguridad()}}<br>
             {%endfor%}
         </div>
-    </div>
-    <br>
+        <div class="profile-line"></div>
+        <br>
     <h3>Descripción:</h3>
     <div>
         {%if form.descripcion.errors%}
-        {{form.descripcion()}}
+        {{form.descripcion(onkeyup(document.getElementById("insert-button").classList.remove("invisible")))}}
         {%for error in form.descripcion.errors%}
         <strong style="color: red;"><span>{{error}}</span></strong>
         {%endfor%}
@@ -487,24 +571,62 @@
         {{form.descripcion()}}
         {%endif%}
     </div>
+    </div>
+    </div>
+
+    </div>
+    
+</div><!-- /Column 4 -->
+</div>
 </form>
 <script>
-    function fotoCheck() {
-        var fotos = document.getElementById("counter");
+
+    function checkRefs() {
+                      var taken = document.getElementById("taken");
+                      var availability = document.getElementById("availability");
+                      var actualRef = document.getElementById("actual_ref");
+                      var refs = document.querySelectorAll(".ref_taken");
+                      refsArray = []
+                         refs.forEach(element => {
+                          var elem = String(element.innerHTML)
+                          refsArray.push(elem.toLowerCase())
+                      });
+                      console.log("Refs Array: ",refsArray)
+                      console.log("Actual ref: ",actualRef.value.toLowerCase())
+                      if (actualRef.value != "") {
+                        if (refsArray.indexOf(actualRef.value.toLowerCase()) > -1) {
+                            availability.value = 0
+                            console.log("Availability: ", availability.value)
+                            availability.innerHTML = " ❌ Ref ya utilizada."
+                            availability.style.color = "red"
+                            actualRef.style.border = "red 1px solid"
+                        } else {
+                            availability.value = 1
+                            console.log("Availability: ", availability.value)
+                            availability.innerHTML = " ✔ Ref disponible."
+                            availability.style.color = "rgb(1, 167, 1)"
+                            actualRef.style.border = "rgb(1, 167, 1) 2px solid"
+                        
+                      } 
+                      } else {
+                        availability.innerHTML = " Escribe una referencia primero."
+                        availability.style.color = "black"
+                      }
+                      
+                  }
+    function checkDescription() {
         var form = document.getElementById("insertForm");
-        if (fotos.innerHTML == 0) {
-            window.alert("Es necesario agregar al menos una foto");
+        var descripcion = document.getElementById("descripcion");
+        if (descripcion.value == "") {
+            window.alert("Ingresa una descripción");
         } else {
-            form.submit()
+            form.submit() 
         }
-        
     }
+
 </script>
-    <div id="testing" class="modal-footer">
-        <a type="button" class="btn button contact-enviar" style="background-color:grey" href="/admin/home">Cerrar</a>
-        <button onclick="fotoCheck()" class="btn button contact-enviar">Insertar</button>
-        <div>
-        </div>
-    </div>
-  
+<div id="testing" class="modal-footer">
+    <a type="button" class="btn button contact-enviar" style="background-color:grey" href="/admin/home">Cerrar</a>
+    <a type="button" id="insert-button" onclick="checkDescription()" style="color: white;" class="btn button contact-enviar inactive">Insertar</a>
+</div>
     {% endblock %}

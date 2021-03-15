@@ -11,31 +11,13 @@ body{
 /* FONTS **********************************/
 a{font-weight: 300;text-decoration: none;}
 p{font-weight: 300;font-style: italic;}
-label{font-weight: 300;font-style: italic;}
+label{font-weight: 300;}
 h1{color: rgb(1, 167, 1);font-weight: 800;}
 h2{font-weight: 600;}
 h3{font-weight: 500;}
 .column{width: 45%;}
 /* FORM *************************************/
-input[type=text], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  input[type=number], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  input[type=email]{
+input[type=text], input[type=password], input[type=email], input[type=number], select {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -56,7 +38,7 @@ textarea{
   
   input[type=submit] {
     width: 100%;
-    background-color: rgb(1, 167, 1);;
+    background-color: rgb(1, 167, 1);
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -104,6 +86,32 @@ textarea{
 .invisible{opacity: 0;}
 .inactive{display: none;}
 .grayscale{filter: grayscale(100%);transition: filter 1s;}
+
+/* The alert message box */
+.alert {
+    padding: 20px;
+    background-color: rgb(1, 167, 1); 
+    color: white;
+    margin-bottom: 15px;
+  }
+  
+  /* The close button */
+  .closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  /* When moving the mouse over the close button */
+  .closebtn:hover {
+    color: black;
+  }
+
 /* ANIMATION **********************************/
 .fade-in{animation: fadein 1s;}
 
@@ -141,7 +149,7 @@ li{list-style: none;}
 }
 .cross{z-index: 2;width: 100%;}
 .cross div{padding: 2rem;text-align: right;margin-top: 2.5rem;width: 82%;}
-
+.menu{z-index: 10;}
 .float-menu{
     position: fixed;
     bottom: 0;
@@ -162,7 +170,7 @@ li{list-style: none;}
     right: 0;
     position: fixed;
     padding: 1rem;
-    z-index: 10;
+    z-index: 1;
 }
 .float-coffee:hover{cursor: pointer;}
 .float-coffee div{
@@ -185,6 +193,16 @@ li{list-style: none;}
     display: flex;
     border-bottom: 3px solid rgb(1, 167, 1);
 }
+.banner-title{
+    text-align: left;
+    width: 100%;
+    color: white;
+    text-shadow: black 3px 3px;
+}
+.banner-title-strong{
+    color:rgb(1, 167, 1);
+    text-shadow: white 3px 3px;
+}
 .matrix{
     position: absolute;
     background-image: url('./montevideo2.png');
@@ -195,7 +213,6 @@ li{list-style: none;}
     z-index: -1;
     width: 100%;
     height: 100%;
-    
 }
 
 .banner-p{
@@ -220,9 +237,8 @@ li{list-style: none;}
     position: fixed;
     width: 30%;
     height: 100%;
-    border: 1px solid white;
     z-index: 5;
-    background-color: rgb(1, 167, 1);
+    background-color: rgb(77, 76, 76);
 }
 .menu ul{
     display: flex;
@@ -267,13 +283,14 @@ li{list-style: none;}
 .grid-container {
     display: grid;
     grid-template-columns: auto auto auto;
+    
   }
 .grid-item img{
     position: relative;
     display: block;
     object-fit: cover;
-    height: 50vh;
-    width:50vw;
+    height: 55vh;
+    width:33vw;
 }
   .grid-item {
     border: 3px solid white;
@@ -281,7 +298,6 @@ li{list-style: none;}
     z-index: 2;
   }
 .grid-detail{
-    height: 90%;
     width: 90%;
     display: flex;
     flex-direction: column;
@@ -294,7 +310,22 @@ li{list-style: none;}
     z-index: 1;
 }
 .grid-detail span{width: 100%;}
-
+.more-props{
+    z-index: 2;
+    margin: 1rem;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    color:rgb(1, 167, 1);
+    font-size: larger;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    text-align: center;
+}
+.more-props:hover {
+    border-top: 2px solid rgb(1, 167, 1);
+    border-bottom: 2px solid rgb(1, 167, 1);
+}
 /* SERVICES ******************************/
 .services-group{
     height: fit-content;
@@ -335,7 +366,7 @@ li{list-style: none;}
     margin-top: -1rem;
     
 }
-.division-1{z-index: 10;height: 100%;border-top: grey 1px solid;margin-top: -10rem;}
+.division-1{z-index: 3;}
 .division-1 img{width: 25vw;}
 .division-2 img {width: 8vw;margin: 2rem;}
 .division-3 img {width: 25vw;}
@@ -376,6 +407,10 @@ li{list-style: none;}
     text-align: left;
 }
 .footer{background-color: rgb(77, 76, 76);color: white;border-top: 3px solid rgb(1, 167, 1);}
+.footer-line{
+    height: 20vw;
+    border-left: rgba(156, 156, 156, 0.459) 1px solid;
+}
 }
 
 @media (max-width: 1024px){ /* >1024px ********************************************************/
@@ -386,13 +421,22 @@ li{list-style: none;}
     display: flex;
     border-top: 1px solid rgba(0, 0, 0, 0.103);
 }
+.banner-title{
+    text-align: left;
+    width: 100%;
+    color: white;
+    text-shadow: black 2px 2px;
+}
+.banner-title-strong{
+    color:rgb(1, 167, 1);
+    text-shadow: white 1px 1px;
+}
 .matrix{
     position: absolute;
     right: 0;
     background-image: url('./montevideo2.png');
     background-size: cover;
     background-repeat: no-repeat;
-    opacity: 0.8 ;
     width: 100%;
     height: 100vh;
     z-index: -10;
@@ -451,7 +495,7 @@ li{list-style: none;}
     height: 100%;
     border: 1px solid white;
     z-index: 5;
-    background-color: white;
+    background-color: rgb(77, 76, 76);
     
 }
 .menu ul{
@@ -468,7 +512,7 @@ li{list-style: none;}
 .navigation ul{
     display: none;
 }
-.menu a{color: black;}
+.menu a{color: white;}
 .menu a:hover{border-bottom: white 1.5px solid;}
 .father{
     width: 100%;
@@ -494,27 +538,30 @@ li{list-style: none;}
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     padding: 3rem;
-    height: fit-content;
+    min-height: 75vh;
 }
 .special-division{
     display: flex;
     flex-direction: column;
     align-items: center;
-
+    justify-content: center;
+    min-height: 90vh;
 }
-.division-1 img{width: 50vw;border-left: grey 1px solid;border-right: grey 1px solid;}
+.division-1{z-index: 10;}
+.division-1 img{height: 7vh;}
 .division-1 h2{font-size: 5vw;}
 .division-2 {flex-direction: column-reverse;}
 .division-2 img {width: 80vw;}
 .division-3 img {width: 40vw;}
 .subdivision{
-    align-items: center;
+    justify-content: center;
     font-size: x-large;
     text-align: center;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 .subdivision-row{
     align-items: center;
@@ -523,6 +570,19 @@ li{list-style: none;}
     display: flex;
     flex-direction: row;
     
+}
+.more-props{
+    z-index: 2;
+    margin: 1rem;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    color:rgb(77, 76, 76);
+    font-size: larger;
+    text-align: right;
+}
+.more-props:hover{
+    color: rgb(1, 167, 1);
 }
 /* SERVICES ******************************/
 .services-group{
@@ -578,6 +638,11 @@ li{list-style: none;}
     text-align: left;
 }
 .footer{background-color: rgb(77, 76, 76);color: white;border-top: 3px solid rgb(1, 167, 1);}
+.footer-line{
+    height: 5vh;
+    width: 25vw;
+    border-bottom: rgba(156, 156, 156, 0.459) 1px solid;
+}
 }
 
 
