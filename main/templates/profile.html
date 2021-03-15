@@ -6,7 +6,9 @@
   function navi() {
     const navBar = document.getElementById("navigation");
     const burger = document.getElementById("burger");
+
     burger.style.marginRight="0.8rem"
+    navBar.style.marginTop="0%"
     navBar.style.backgroundColor="rgb(77, 76, 76)"
     navBar.style.height="5rem"
     navBar.style.width="100%"
@@ -27,7 +29,7 @@
 <div class="slideshow-container">
   {% for foto in fotos %}
       <div class="mySlides fade">
-        <img height="20%" width="550vw" src="data:image/png;base64,{{ foto }}" class="" alt="...">
+        <img height="500vh" src="data:image/png;base64,{{ foto }}" class="" alt="...">
       </div>
   {% endfor%}
 
