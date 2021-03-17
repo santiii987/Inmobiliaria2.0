@@ -38,7 +38,7 @@ textarea{
   
   input[type=submit] {
     width: 100%;
-    background-color: rgb(1, 167, 1);;
+    background-color: rgb(1, 167, 1);
     color: white;
     padding: 14px 20px;
     margin: 8px 0;
@@ -86,6 +86,32 @@ textarea{
 .invisible{opacity: 0;}
 .inactive{display: none;}
 .grayscale{filter: grayscale(100%);transition: filter 1s;}
+
+/* The alert message box */
+.alert {
+    padding: 20px;
+    background-color: rgb(1, 167, 1); 
+    color: white;
+    margin-bottom: 15px;
+  }
+  
+  /* The close button */
+  .closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  /* When moving the mouse over the close button */
+  .closebtn:hover {
+    color: black;
+  }
+
 /* ANIMATION **********************************/
 .fade-in{animation: fadein 1s;}
 
@@ -123,7 +149,7 @@ li{list-style: none;}
 }
 .cross{z-index: 2;width: 100%;}
 .cross div{padding: 2rem;text-align: right;margin-top: 2.5rem;width: 82%;}
-
+.menu{z-index: 10;}
 .float-menu{
     position: fixed;
     bottom: 0;
@@ -144,7 +170,7 @@ li{list-style: none;}
     right: 0;
     position: fixed;
     padding: 1rem;
-    z-index: 10;
+    z-index: 1;
 }
 .float-coffee:hover{cursor: pointer;}
 .float-coffee div{
@@ -166,6 +192,16 @@ li{list-style: none;}
     height: 100vh;
     display: flex;
     border-bottom: 3px solid rgb(1, 167, 1);
+}
+.banner-title{
+    text-align: left;
+    width: 100%;
+    color: white;
+    text-shadow: black 3px 3px;
+}
+.banner-title-strong{
+    color:rgb(1, 167, 1);
+    text-shadow: white 3px 3px;
 }
 .matrix{
     position: absolute;
@@ -385,6 +421,16 @@ li{list-style: none;}
     display: flex;
     border-top: 1px solid rgba(0, 0, 0, 0.103);
 }
+.banner-title{
+    text-align: left;
+    width: 100%;
+    color: white;
+    text-shadow: black 2px 2px;
+}
+.banner-title-strong{
+    color:rgb(1, 167, 1);
+    text-shadow: white 1px 1px;
+}
 .matrix{
     position: absolute;
     right: 0;
@@ -504,9 +550,8 @@ li{list-style: none;}
     min-height: 90vh;
 }
 .division-1{z-index: 10;}
-.division-1 img{width: 50vw;}
+.division-1 img{height: 7vh;}
 .division-1 h2{font-size: 5vw;}
-.subdivision-1 h2{display: none;}
 .division-2 {flex-direction: column-reverse;}
 .division-2 img {width: 80vw;}
 .division-3 img {width: 40vw;}

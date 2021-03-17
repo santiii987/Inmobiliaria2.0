@@ -877,7 +877,7 @@ def contact_questions():
     db.session.add(new_question)
     db.session.commit()
     flash("Pregunta enviada correctamente!")
-    return redirect(url_for('contactus'))
+    return redirect(url_for('index'))
 
 @app.route('/question-mail', methods=['POST', 'GET'])
 def property_questions():
@@ -900,7 +900,9 @@ def admin(section):
     propietarios = Propietarios.query.all()
     contactquestions_amount = Contactquestions.query.filter_by(read=False).count()
     if section == "insert":
-        return render_template('insert.html',form=form)
+        get_properties = Properties.query.with_entities(Properties.ref).all()
+        print(get_properties)
+        return render_template('insert.html',form=form,get_properties = get_properties,propietarios=propietarios)
     if section == "home":
         get_properties = Properties.query.filter_by(pausado=0).all()
         for propiedades in get_properties:
@@ -1055,9 +1057,12 @@ def insertation():
     form = PropertyForm()
     fotos_count = len(form.fotos.data)
     flag = True
+    print('asd')
     if form.validate_on_submit():
-        ref_check = Properties.query.filter_by(ref = form.data['ref']).first()
-        if (form.data['precio_dolares'] == '' and form.data['precio_dolares'] == ''):
+        ref_check = Properties.query.filter_by(ref = request.form['ref']).first()
+        ref_check = Properties.query.filter_by(ref = upper(request.form['ref'])).first() if ref_check is None else ref_check
+        print(ref_check,request.form['ref'])
+        if (form.data['precio_pesos'] == '' and form.data['precio_dolares'] == ''):
             flag = False
             flash("La propiedad necesita un precio")
         if (fotos_count > 15):

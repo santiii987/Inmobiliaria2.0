@@ -6,17 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pallares y Asociados</title>
   <link rel="icon" href="{{url_for('static', filename='favicon.ico')}}" type="image/ico">
-    <!--BOOTSTRAP 4------------------------------------------------------>
-    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-    crossorigin="anonymous"></script> -->
-
   <!--CSS-------------------------------------------------------------->
   <!--FONT AWESOME----------------------------------------------------->
   <script src="https://kit.fontawesome.com/81f085f1f3.js" crossorigin="anonymous"></script>
@@ -100,7 +89,7 @@
     <ul id="menu-ul">
         <li><a style="text-shadow: 2px 2px black;" href="/" onclick="burger(false)">Inicio</a></li>
         <li><a style="text-shadow: 2px 2px black;" href="/#about-us" onclick="burger(false)">Sobre nosotros</a></li>
-        <li><a style="text-shadow: 2px 2px black;" href="#footer" onclick="burger(false)">Contacto</a></li>
+        <li><a style="text-shadow: 2px 2px black;" href="/contact" onclick="burger(false)">Contacto</a></li>
         <!-- <li><a style="text-shadow: 2px 2px black;" href="" onclick="burger(false)">Ingresar</a></li> -->
         
     </ul>
@@ -154,29 +143,30 @@
         <li><a href="" onclick="burger(false)">Ventas</a></li>
         <li><a href="" onclick="burger(false)">Alquileres</a></li>
         <li><a href="#about-us" onclick="burger(false)">Institucional</a></li>
-        <li><a href="" onclick="burger(false)">Proyectos</a></li>
-        <li><a href="#footer" onclick="burger(false)">Contacto</a></li>
+        <li><a href="/contact-page" onclick="burger(false)">Contacto</a></li>
     </ul>
 </div>
-
-<!-- FLASH MESSAGE ------------------------------>
-<div class="flash-message">
-  {% with messages = get_flashed_messages() %}
-{% if messages %}
-  {% for message in messages %}
-  <div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin: 1rem;">
-    <span>{{message}}</span>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  {% endfor %}
-{% endif %}
-{% endwith %}
-</div>
-<!-- /FLASH MESSAGE ------------------------------>
-
   <!--/NAVIGATION------------------------------------------------->
+    <!-- FLASH MESSAGE ------------------------------>
+    <div class="flash-message" style="z-index: 10;position: fixed;width: 500px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    margin-top: -100px;
+    margin-left: -250px;">
+      {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+      <div class="alert">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        {{message}}
+      </div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+    </div>
+    <!-- /FLASH MESSAGE ------------------------------>
+  
 {% endblock %}
 
 {% block banner %}
@@ -231,37 +221,16 @@
 <div class="father footer">
   <div id="footer" class="division">
       <div class="subdivision object invisible">
-          <form action="/contact-mail" method="POST" enctype="multipart/form-data"
-          name="EmailForm" style="display: flex;flex-direction: column;" name=”EmailForm”>
-              <div class="inputs" style="text-align: left;">
-                  <h3>Comunícate con nosotros:</h3>
-                  <div class="inputs">
-                      <label for="">Nombre completo*</label><br><input type="text" name="contact-name" required="text">
-                  </div>
-                  <div class="inputs">
-                    <label for="">Tel / cel</label><br><input name="contact-phone" type="number" class="form-control" >
-                  </div>
-                  <div class="inputs">
-                      <label for="">Email*</label><br><input type="email" required="required" name="contact-email" 
-                      type="email">
-                  </div>
-                  <div class="inputs">
-                      <label for="">Mensaje*</label><br>
-                      <textarea name="message" rows="10" cols="30" required="required" name="contact-question" type="textarea">
-                      </textarea>
-                  </div>
-              </div>
-              <input type="submit" value="Enviar">
-          </form>
+          <img style="opacity: 0.5;" src="{{url_for('static', filename='pallares&asociados2.png')}}" height="200px" alt="">
       </div>
       <div class="footer-line"></div>
       <div class="subdivision object invisible">
       <div class="whatsapp">
-          <h3 style="margin-left: 2rem;margin-right: 2rem;margin-bottom: 2rem;">A los teléfonos:</h3>
+          <h3 style="margin-left: 2rem;margin-right: 2rem;margin-bottom: 2rem;">Teléfonos:</h3>
           <p style="font-size: large;">099 485 699 | 099 861 140</p>
       </div>
       <div class="telegram">
-          <h3 style="margin-left: 2rem;margin-right: 2rem;margin-bottom: 2rem;">O en nuestra dirección:</h3>
+          <h3 style="margin-left: 2rem;margin-right: 2rem;margin-bottom: 2rem;">Dirección:</h3>
           <p style="font-size: large;">Melitón Gonzalez 1341 - Buceo <br>
               Montevideo - Uruguay</p>
       </div>
