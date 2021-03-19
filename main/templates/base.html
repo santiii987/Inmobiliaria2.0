@@ -89,7 +89,7 @@
     <ul id="menu-ul">
         <li><a style="text-shadow: 2px 2px black;" href="/" onclick="burger(false)">Inicio</a></li>
         <li><a style="text-shadow: 2px 2px black;" href="/#about-us" onclick="burger(false)">Sobre nosotros</a></li>
-        <li><a style="text-shadow: 2px 2px black;" href="/contact" onclick="burger(false)">Contacto</a></li>
+        <li><a style="text-shadow: 2px 2px black;" href="/contact-page" onclick="burger(false)">Contacto</a></li>
         <!-- <li><a style="text-shadow: 2px 2px black;" href="" onclick="burger(false)">Ingresar</a></li> -->
         
     </ul>
@@ -139,21 +139,18 @@
         <div><strong style="padding: 0.5rem;background-color: rgb(77, 76, 76);color: white;">X</strong></div>
     </div>
     <ul>
-        <li><a href="" onclick="burger(false)">Inicio</a></li>
-        <li><a href="" onclick="burger(false)">Ventas</a></li>
-        <li><a href="" onclick="burger(false)">Alquileres</a></li>
+        <li><a href="/" onclick="burger(false)">Inicio</a></li>
+        <li><a href="/ventas" onclick="burger(false)">Ventas</a></li>
+        <li><a href="/alquiler" onclick="burger(false)">Alquileres</a></li>
         <li><a href="#about-us" onclick="burger(false)">Institucional</a></li>
         <li><a href="/contact-page" onclick="burger(false)">Contacto</a></li>
     </ul>
 </div>
   <!--/NAVIGATION------------------------------------------------->
     <!-- FLASH MESSAGE ------------------------------>
-    <div class="flash-message" style="z-index: 10;position: fixed;width: 500px;
-    height: 200px;
-    top: 50%;
-    left: 50%;
-    margin-top: -100px;
-    margin-left: -250px;">
+    <div class="flash-message" style="position: fixed;width: 100%;
+    
+    top: 11%;">
       {% with messages = get_flashed_messages() %}
     {% if messages %}
       {% for message in messages %}

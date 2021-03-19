@@ -162,10 +162,14 @@ img {vertical-align: middle;}
 }
 
 .operation-type{
+    display: flex;
+    flex-direction: row;
     padding: 1rem;
     border: 1px solid #cce7d6; 
     background-color: white;
     margin-bottom: 1rem;
+    align-items: center;
+    
 }
 .operation-type h3{
     color: rgb(1, 167, 1);
@@ -266,6 +270,9 @@ img {vertical-align: middle;}
     border: 1px solid rgb(1, 167, 1); 
     background-color: white;
     margin-bottom: 1rem;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
 }
 .operation-type h3{
     color: rgb(1, 167, 1);

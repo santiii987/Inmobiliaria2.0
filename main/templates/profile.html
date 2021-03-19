@@ -327,11 +327,11 @@
 <div class="sticky-container" id="contact-form">
 <div class="sticky-contact">
   <div class="operation-type" >
-    <p><strong>{{ get_property.operaciones.operacion }}</strong></p>
+    <p><strong>{{ get_property.operaciones.operacion }}:</strong>&nbsp;</p>
       {% if get_property.precio_dolares == None %}
-      <strong>$</strong> <h3 class="number_dots">{{ get_property.precio_pesos }}</h3>
+      <p>$&nbsp; </p> <h3 class="number_dots">{{ get_property.precio_pesos }}</h3>
       {% else %}
-      <strong>U$S</strong> <h3 class="number_dots">{{ get_property.precio_dolares }}</h3>
+      <p>U$S&nbsp; </p> <h3 class="number_dots">{{ get_property.precio_dolares }}</h3>
       {% endif %}
   </div>
   <script> 
