@@ -55,8 +55,8 @@
                 <tbody >
                   {% for propiedades in propietario.properties %}
                     <tr>
-                        {% if propiedades.photo1 != none %}
-                        <td style="vertical-align: middle;" class="inmueble"><img src="data:image/png;base64,{{ base64.b64encode(propiedades.photos1).decode('utf-8') }}" alt=""
+                        {% if propiedades.foto != none %}
+                        <td style="vertical-align: middle;" class="inmueble"><img src="data:image/png;base64,{{ propiedades.foto }}" alt=""
                                 style="width: 150px;"><br> {{ propiedades.direccion }}</td>
                         {% else %}
                         <td style="vertical-align: middle;" class="inmueble"> Sin foto {{ propiedades.direccion }}</td>

@@ -99,6 +99,7 @@ def store_imgs(ref,imgs):
         im = Image.open(img).save(str(i+1) + '.' + fext[-1])
 def add_imgs(path_ref,img,id):
     im = Image.open(img).save(path_ref + '/' + str(id))
+
 def del_imgs(ref,id):
     id = [int(i) for i in id]
     id.sort()
@@ -399,6 +400,28 @@ def index():
     return render_template('index-premium.html', barrios = barrios_query, 
     get_properties = p_show, paginas = paginas, pagina = 1)
 
+
+@app.route('/page')
+#@profile
+def page():
+    barrios_query = Barrios.query.all()
+    p_show = []
+    aux = []
+    i = 0
+    get_properties = Properties.query.filter(Properties.pausado == False,Properties.destacado == 1).limit(9).all()
+    properties_count = len(get_properties) if get_properties is not None else 0
+    if (properties_count < 9):
+        get_properties_left = Properties.query.filter(Properties.pausado == False,Properties.destacado == 0).limit(9-properties_count).all()
+        for propiedades in get_properties_left:
+            get_properties.append(propiedades)
+    #print(get_properties)
+    paginas = Properties.query.count()
+    p_show = properties_mtx(get_properties,3)
+    #print(p_show[0])
+    paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
+    return render_template('index-premium-pag.html', barrios = barrios_query, 
+    get_properties = p_show, paginas = paginas, pagina = 1,operacion_title = "Todas las propiedades")
+
 @app.route('/<int:page>/<int:step>/<int:id>')
 def index_paginas(page,step,id):
     print(page,step,id)
@@ -415,9 +438,9 @@ def index_paginas(page,step,id):
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
     print('                      ' , p_show[0][0][0].id)
     #if (id == paginas)
-    return render_template('index.html', 
+    return render_template('index-premium-pag.html', 
     get_properties = p_show, barrios = barrios_query, pagina = page, 
-    paginas = paginas, p_search = p_search)   
+    paginas = paginas, p_search = p_search,operacion_title = "Todas las propiedades")   
 
 @app.route('/delete/<id>', methods=['GET'])
 def delete(id):
@@ -552,7 +575,7 @@ def search_page():
         paginas = search_results.count()
         if(paginas == 0):
             flash("Sin resultados")
-            return redirect(url_for('index'))
+            return redirect(url_for('page'))
         get_properties = search_results.filter(Properties.pausado == False,Properties.destacado == 1).limit(9).all()
         properties_count = len(get_properties) if get_properties is not None else 0
         if (properties_count < 9):
@@ -562,14 +585,14 @@ def search_page():
         session['busqueda'] = request.form 
     else:
         #p_show = Properties.query.limit(30).all()
-        return redirect(url_for('index'))
+        return redirect(url_for('page'))
     print(errores,[e for e in errores])
     print(get_properties)
     p_show = properties_mtx(get_properties,3)
     paginas = math.ceil(int(paginas)/9)
-    return render_template('index.html', barrios = barrios_query,
+    return render_template('index-premium-pag.html', barrios = barrios_query,
     paginas = paginas, pagina = 1, 
-    get_properties=p_show, errores=errores)
+    get_properties=p_show, errores=errores, p_search = True)
 
 
 @app.route('/p_search/<int:page>/<int:step>/<int:id>', methods=['POST', 'GET'])
@@ -674,17 +697,17 @@ def search(page,step,id):
     if (search_results != False):
         paginas = search_results.count()
         if(paginas == 0):
-            return redirect(url_for('index'))
+            return redirect(url_for('page'))
         search_results = paginacion(page,step,id,search_results)
     else:
-        return redirect(url_for('index'))
+        return redirect(url_for('page'))
     print(errores,[e for e in errores])
     print(search_results)
     p_show = properties_mtx(search_results,3)
     paginas = math.ceil(int(paginas)/9)
-    return render_template('index.html', barrios = barrios_query, 
+    return render_template('index-premium-pag.html', barrios = barrios_query, 
     paginas = paginas, pagina = page, get_properties=p_show, 
-    errores=errores)
+    errores=errores, p_search = True)
 
 @app.route('/admin-search', methods=['POST', 'GET'])
 def admin_search():
@@ -820,8 +843,8 @@ def ventas():
     print([propiedad.id for propiedad in get_properties])
     p_show = properties_mtx(get_properties,3)
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1 
-    return render_template('index.html', barrios = barrios_query, 
-    get_properties = p_show, paginas = paginas, pagina = 1,ventas = ventas)
+    return render_template('index-premium-pag.html', barrios = barrios_query, 
+    get_properties = p_show, paginas = paginas, pagina = 1,ventas = ventas,operacion_title = "Propiedades en venta")
 
 @app.route('/ventas/<int:page>/<int:step>/<int:id>', methods=['GET'])
 def ventas_pag(page,step,id):
@@ -834,8 +857,8 @@ def ventas_pag(page,step,id):
     paginas = Properties.query.filter_by(operacion_id = 1).count()
     p_show = properties_mtx(get_properties,3)
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1 
-    return render_template('index.html', barrios = barrios_query, 
-    get_properties = p_show, paginas = paginas, pagina = page,  ventas = ventas)
+    return render_template('index-premium-pag.html', barrios = barrios_query, 
+    get_properties = p_show, paginas = paginas, pagina = page,  ventas = ventas,operacion_title = "Propiedades en venta")
 
 @app.route('/alquiler', methods=['GET'])
 def alquiler():
@@ -851,23 +874,23 @@ def alquiler():
     paginas = Properties.query.filter_by(operacion_id = 2).count()
     p_show = properties_mtx(get_properties,3)
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
-    return render_template('index.html', barrios = barrios_query, 
-    get_properties = p_show, paginas = paginas, pagina = 1, alquiler = alquiler)
+    return render_template('index-premium-pag.html', barrios = barrios_query, 
+    get_properties = p_show, paginas = paginas, pagina = 1, alquiler = alquiler,operacion_title = "Propiedades en alquiler")
 
 @app.route('/alquiler/<int:page>/<int:step>/<int:id>', methods=['GET'])
 def alquiler_pag(page,step,id):
     alquiler = True
     barrios_query = Barrios.query.all()
     p_show = []
-    get_properties = paginacion(page,step,id,Properties.query.filter(Properties.operacion_id==2))
+    get_properties = paginacion(page,step,id,Properties.query.filter(Properties.pausado == False,Properties.operacion_id==2))
     print('asdasdas',get_properties)
     if (get_properties == []):
         return redirect(url_for('alquiler'))
     paginas = Properties.query.filter_by(operacion_id = 2).count()
     p_show = properties_mtx(get_properties,3)
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
-    return render_template('index.html', barrios = barrios_query, 
-    get_properties = p_show, paginas = paginas, pagina = page ,alquiler = alquiler)
+    return render_template('index-premium-pag.html', barrios = barrios_query, 
+    get_properties = p_show, paginas = paginas, pagina = page ,alquiler = alquiler,operacion_title = "Propiedades en alquiler")
 
 @app.route('/contact-mail', methods=['POST', 'GET'])
 def contact_questions():
@@ -999,7 +1022,7 @@ def edit_property(id):
             print(ext)
             img_check = add_imgs(path_to_ref,added_imgs[i], str(total_imgs+1) +'.'+ ext[-1])
             i+=1
-            total_imgs = total_imgs + i
+            total_imgs =+ 1
         pics_amount_condition_check = i == added_imgs_count
         if (not pics_amount_condition_check):
             flag = False
@@ -1060,7 +1083,7 @@ def insertation():
     print('asd')
     if form.validate_on_submit():
         ref_check = Properties.query.filter_by(ref = request.form['ref']).first()
-        ref_check = Properties.query.filter_by(ref = upper(request.form['ref'])).first() if ref_check is None else ref_check
+        ref_check = Properties.query.filter_by(ref = request.form['ref'].upper()).first() if ref_check is None else ref_check
         print(ref_check,request.form['ref'])
         if (form.data['precio_pesos'] == '' and form.data['precio_dolares'] == ''):
             flag = False
@@ -1213,7 +1236,11 @@ def owner_profile(id):
     contactquestions_amount = Contactquestions.query.filter_by(read=False).count()
     form = PropertyForm()
     propietario = Propietarios.query.filter_by(id=id).first()
-    return render_template('owner-profile.html', questions_amount=contactquestions_amount, form=form, propietario=propietario,base64 = base64)
+    for propiedades in propietario.properties:
+        foto = get_img(propiedades.ref)
+        setattr(propiedades,'foto',foto)
+    print('asdasdasdasdasdasdasdasdsdasdasda',propietario.properties[0])
+    return render_template('owner-profile.html', questions_amount=contactquestions_amount, form=form, propietario=propietario)
 
 @app.route('/delete-prop/<id>', methods=['GET'])
 @login_required
