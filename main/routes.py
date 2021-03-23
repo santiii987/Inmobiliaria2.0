@@ -12,6 +12,7 @@ import random
 import io
 import base64
 import math 
+import shutil
 from PIL import Image
 import cProfile, pstats, io
 
@@ -444,14 +445,14 @@ def index_paginas(page,step,id):
 
 @app.route('/delete/<id>', methods=['GET'])
 def delete(id):
-    # try:
-        com_deletes = Comfort.query.filter_by(id = id).delete()
-        sec_deletes = Seguridad.query.filter_by(id = id).delete()
-        p_deletes = Properties.query.filter_by(id = id).delete()
-        db.session.commit()
-    # except Exception:
-    #   flash('No es posible eliminar esta propiedad')
-        return redirect(url_for('admin',section = 'home'))
+    com_deletes = Comfort.query.filter_by(id = id).delete()
+    sec_deletes = Seguridad.query.filter_by(id = id).delete()
+    prop_ref = Properties.query.filter_by(id = id).with_entities(Properties.ref).first()
+    print(prop_ref[0])
+    p_deletes = Properties.query.filter_by(id = id).delete()
+    shutil.rmtree(imgs_dir + prop_ref.ref)
+    db.session.commit()
+    return redirect(url_for('admin',section = 'home'))
 
 @app.route('/paused/<id>', methods=['GET'])
 def pause(id):
@@ -1048,6 +1049,8 @@ def edit_property(id):
             return render_template('asdasd.html', 
             form = form,fotos = fotos, propietarios = propietarios,questions_amount=contactquestions_amount,id = id,barrios = barrios, base64=base64)
         else:
+            if get_property.ref != form.data['ref']:
+                os.rename(imgs_dir + get_property.ref, imgs_dir + form.data['ref'])
             assign_form_to_properties(get_property,form)
             db.session.commit()
     else:
