@@ -1083,7 +1083,7 @@ def insertation():
     form = PropertyForm()
     fotos_count = len(form.fotos.data)
     flag = True
-    print('asd')
+    print('asd',form.fotos.data)
     if form.validate_on_submit():
         ref_check = Properties.query.filter_by(ref = request.form['ref']).first()
         ref_check = Properties.query.filter_by(ref = request.form['ref'].upper()).first() if ref_check is None else ref_check
@@ -1101,7 +1101,17 @@ def insertation():
             barrio = Barrios.query.filter_by(barrio = form.data['barrio']).first()
             operacion = Operaciones.query.filter_by(operacion = form.data['operacion']).first()
             tipo_propiedad = Tipo_propiedad.query.filter_by(tipo_propiedad = form.data['tipo_propiedad']).first()
-            store_imgs(form.data['ref'],form.fotos.data)
+            print(form.fotos.data)
+            added_imgs = request.files.getlist('fotos')
+            added_imgs_count = len(added_imgs)
+            print(added_imgs[0].filename)
+            #Condicional por si el input no trae ninguna imagen
+            if added_imgs[0].filename != '' and added_imgs_count <= 15:
+                added_imgs.pop()
+                path_to_ref = imgs_dir + '/' + request.form['ref']
+                store_imgs(request.form['ref'],added_imgs)
+            else:
+                flash('A ocurrido un error en la sección de fotos')
             propietario_query = Propietarios.query.filter_by(telefono = form.data['telefono']).first()
             if propietario_query is None:
                 propietario_add = Propietarios(nombre = form.data['nombre'], apellido = form.data['apellido'], email = form.data['email'], telefono = form.data['telefono'])     

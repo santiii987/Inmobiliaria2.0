@@ -1,8 +1,7 @@
 {% extends "base-admin.html" %}
 {% block content %}
 <div class="update-father">
-    <form class="insert-form" id="insertForm" method='POST' action="/insertation" id='da-modal' enctype="multipart/form-data"
-        onsubmit='groupPhs();'>
+    <form class="insert-form" id="insertForm" method='POST' action="/insertation" id='da-modal' enctype="multipart/form-data">
         <div class="column" style="margin-bottom: 1rem;"><!-- Column 1 -->
         {{ form.csrf_token }}
         
@@ -80,7 +79,7 @@
                 <div class="third-row"></div>
             </div>
         </div>
-        <div class="rest-of-data" style="padding: 1rem;">
+        <div class="rest-of-data" style="padding: 1rem;" id ="media">
             <label for="fotos"><strong>Ingresar Fotos</strong></label> <input required="required" id="fotos" multiple="" name="fotos"
                 onchange="readURL(this);" type="file">
         </div>
@@ -90,13 +89,9 @@
     collection = new DataTransfer();
     collection_mapper = []
     addedPhs = 0
-    fotos = document.getElementsByClassName('db_foto_up').length
+    fotos = document.getElementsByClassName('new').length
     console.log("Fotos: ", fotos)
     document.getElementById('counter').innerHTML = fotos
-    function groupPhs() {
-        phsForm = document.getElementById('fotos')
-        phsForm.files = collection.files
-    }
     function readURL(input) {
         if (input.files) {
             fotos_count = input.files.length
@@ -111,6 +106,9 @@
                     console.log(element)
                     let reader = new FileReader();
                     reader.onload = function (e) {
+                        input.setAttribute('hidden','hidden')
+                        $('#media').append('<input required="required" id="fotos" multiple="" name="fotos" \
+                            onchange="readURL(this);" type="file">')                        
                         addedPhs += 1
                         collection_mapper.push(addedPhs)
                         newPh = "<div class='new' id ='" + addedPhs + "' style='padding: 0.5rem;'> \
