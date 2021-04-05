@@ -14,7 +14,7 @@ from main import app
 # @app.route('/admin')
 # def admin_page():
 #     return render_template('admin.html')
-
+################# GIT TEST ###########################
 #SERVER SETUP (DEBUGGER)-------------------------------
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
