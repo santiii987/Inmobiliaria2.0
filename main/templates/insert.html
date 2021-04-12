@@ -102,46 +102,54 @@
                 window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + " fotos de mas")
             } else {
                 var imgs = input.files
-                console.log(collection)
-                file_fields[fotos].setAttribute('hidden','hidden') 
-                $('#media').append('<input required="required" id="fotos" name="fotos" \
-                            onchange="readURL(this);" type="file">') 
+                imgsForm = new FormData() 
                 for (element of imgs) {
-                    collection.items.add(element)
-                    console.log(element)
-                    let reader = new FileReader();
-                    reader.onload = function (e) {
-                      
-                        fotos += 1
-                        addedPhs += 1
-                        position_id.push(addedPhs)
-
-                        newPh = "<div class='new' id ='" + addedPhs + "' style='padding: 0.5rem;'> \
-                            <div class='dropdown'> \
-                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
-                            <img src='" + e.target.result + "' class='div-foto" + addedPhs + "' height='200'> \
-                                </a> \
-                                    <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
-                                        <input style='width:22rem' type='file' class = '" + addedPhs + "' onchange='changeNew(this);'> \
-                                        <a href='#' class = '" + addedPhs + "' onclick='deleteNew(this);'>Eliminar foto</a> </div> </div> </div>"
-                        first = $('.first-row').children().length
-                        second = $('.second-row').children().length
-                        third = $('.third-row').children().length
-                        if (first < 5) {
-                            $('.first-row').append(newPh)
-                        } else if (second < 5) {
-                            $('.second-row').append(newPh)
-                        } else {
-                            $('.third-row').append(newPh)
-                        }
-                        counter = document.getElementById('counter').innerHTML = fotos;
-                    };
-                    reader.readAsDataURL(element);
+                    imgsForm.append('imgs',element)
                 }
-            }
+                $.ajax({
+                    url: '/imgsPost',
+                    type: 'post',
+                    data: imgsForm,
+                    contentType: false,
+                    processData: false,
+                    success: function(response){
+                        if(response != 0){
+                            console.log(element)
+                            let reader = new FileReader();
+                            reader.onload = function (e) {                                
+                                fotos += 1
+                                newPh = "<div class='new' id ='" + fotos + "' style='padding: 0.5rem;'> \
+                                    <div class='dropdown'> \
+                                    <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                    <img src='" + e.target.result + "' class='div-foto" + fotos + "' height='200'> \
+                                        </a> \
+                                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                                <input style='width:22rem' type='file' class = '" + fotos + "' onchange='changeNew(this);'> \
+                                                <a href='#' class = '" + fotos + "' onclick='deleteNew(this);'>Eliminar foto</a> </div> </div> </div>"
+                                first = $('.first-row').children().length
+                                second = $('.second-row').children().length
+                                third = $('.third-row').children().length
+                                if (first < 5) {
+                                    $('.first-row').append(newPh)
+                                } else if (second < 5) {
+                                    $('.second-row').append(newPh)
+                                } else {
+                                    $('.third-row').append(newPh)
+                                }
+                                counter = document.getElementById('counter').innerHTML = fotos;
+                            }
+                            reader.readAsDataURL(element);
+                        }else{
+                            alert('file not uploaded');
+                        }
+                        imgsForm.delete('imgs')
+                    },
+                });
+            };
         }
-    }
 
+    }
+    
     function deleteNew(input) {
         fotos += -1
         $('#counter').html(fotos)
