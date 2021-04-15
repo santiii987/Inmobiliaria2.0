@@ -170,11 +170,9 @@
         // collection = collection_aux
         // collection_mapper.splice(i, 1)
         // console.log(collection.files)
-        removed_index.push(input.classList[0])
         document.getElementById(input.classList[0]).remove();
-        position = position_id.indexOf(input.classList[0])
-        file_fields[position].remove();
-        position_id.splice(position,1)
+
+
         
     }
     function changeNew(input) {
