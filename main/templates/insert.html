@@ -74,11 +74,9 @@
             <div class="update-fotos"
                 style="overflow-x: scroll; text-align: center;border-top: rgba(128, 128, 128, 0.363) 1px solid;border-bottom: rgba(128, 128, 128, 0.363) 1px solid;padding: 1rem;">
                 <span><h3>Fotos:  <strong><span id = "counter">0</span>/15</span></h3><span id="picErr"></span></strong>
-                <div>
-                    <div class="first-row"></div>
-                    <div class="second-row"></div>
-                    <div class="third-row"></div>
-                </div>
+                <div class="rows first-row"></div>
+                <div class="rows second-row"></div>
+                <div class="rows third-row"></div>
             </div>
         </div>
         <div class="rest-of-data" style="padding: 1rem;" id ="media">
@@ -118,7 +116,6 @@
                                 <img src='" + img.get_img() + "' class='div-foto" + img.get_id() + "' height='200'> \
                             </a> \
                             <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
-                                <input style='width:22rem' type='file' class = '" + img.get_id() + "' onchange='changeNew(this);'> \
                                 <a href='#' class = '" + img.get_id() + "' onclick='deleteNew(this);'>Eliminar foto</a> \
                             </div> \
                         </div> \
@@ -158,8 +155,16 @@
             this.imgs.push(img)
             console.log('Img added to array')
         }
-        get_Imgs(){
-            return this.imgs
+        get_imgs(){
+            imgs = []
+            for (img in this.imgs){
+                let reader = new FileReader();
+                reader.onload = function (e) { 
+                    imgs.push(e.target.result)
+                } 
+                reader.readAsDataURL(img);
+            }
+            return imgs
         }
         to_form(){
             imgsForm = new FormData
@@ -175,13 +180,15 @@
                 processData: false,
                 success: function(response){
                     if (response != 0){
-                        preview = new Preview(this.imgs)
-                        preview.render($('.rows'), 5)
+                        document.getElementById('counter').innerHTML = index.get_indexArray().length;
+                        for (img in this.get_imgs())
+                            preview = new Preview(img)
+                            preview.render($('.rows'), 5)
                     }else{
                         alert('Hubo un error con las imagenes')
                     }
                 },
-            })        
+            });        
         }
     }
     class ImgIndexing{
@@ -201,113 +208,44 @@
         delete(x){
             indexArray.splice(this.position(x),1)
         }
+        deletePost(x){
+            $.ajax({
+                url: '/imgsDelete',
+                type: 'post',
+                data: this.position(x),
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if (response != 0){
+                        document.getElementById(x).remove();
+                        this.delete(x)
+                        document.getElementById('counter').innerHTML = this.indexArray.length;
+                    }else{
+                        alert('Hubo un error con las imagenes')
+                    }
+                },
+            }); 
+        }
     }
+    index = new ImgIndexing()
     function readURL(input) {
         if (input.files) {
             fotos_count = input.files.length
             if (fotos + fotos_count > 15) {
                 window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + " fotos de mas")
             } else {
-                var imgs = input.files
-                imgsForm = new FormData() 
+                var imgs = input.files 
+                imgArray = new ImgsArray()
                 for (element of imgs) {
-                    imgsForm.append('imgs',element)
+                    img = new Img(element)
+                    imgArray.add_img()
                 }
-                $.ajax({
-                    url: '/imgsPost',
-                    type: 'post',
-                    data: imgsForm,
-                    contentType: false,
-                    processData: false,
-                    success: function(response){
-                        if(response != 0){
-                            console.log(element)
-                            let reader = new FileReader();
-                            reader.onload = function (e) {                                
-                                fotos += 1
-                                newPh = "<div class='new' id ='" + fotos + "' style='padding: 0.5rem;'> \
-                                    <div class='dropdown'> \
-                                    <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
-                                    <img src='" + e.target.result + "' class='div-foto" + fotos + "' height='200'> \
-                                        </a> \
-                                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
-                                                <input style='width:22rem' type='file' class = '" + fotos + "' onchange='changeNew(this);'> \
-                                                <a href='#' class = '" + fotos + "' onclick='deleteNew(this);'>Eliminar foto</a> </div> </div> </div>"
-                                first = $('.first-row').children().length
-                                second = $('.second-row').children().length
-                                third = $('.third-row').children().length
-                                if (first < 5) {
-                                    $('.first-row').append(newPh)
-                                } else if (second < 5) {
-                                    $('.second-row').append(newPh)
-                                } else {
-                                    $('.third-row').append(newPh)
-                                }
-                                counter = document.getElementById('counter').innerHTML = fotos;
-                            }
-                            reader.readAsDataURL(element);
-                        }else{
-                            alert('file not uploaded');
-                        }
-                        imgsForm.delete('imgs')
-                    },
-                });
-            };
+                imgArray.postImgs()        
+            }
         }
-
     }
-    
     function deleteNew(input) {
-        fotos += -1
-        $('#counter').html(fotos)
-        i = 0
-        // while (collection_mapper[i] != input.classList[0]) {
-        //     i++
-        // }
-        // collection_aux = new DataTransfer
-        // coll_len = collection.files.length
-        // for (var j = 0; j < coll_len; j++) {
-        //     if (j == i) {
-        //         continue
-        //     } else {
-        //         collection_aux.items.add(collection.files[j])
-        //     }
-
-        // }
-        // collection = collection_aux
-        // collection_mapper.splice(i, 1)
-        // console.log(collection.files)
-        document.getElementById(input.classList[0]).remove();
-
-
-        
-    }
-    function changeNew(input) {
-        if (input.files) {
-            reader = new FileReader
-            reader.onload = (e) => {
-                console.log(input.classList[0])
-                $('.div-foto' + input.classList[0]).attr('src', e.target.result)
-            }
-            reader.readAsDataURL(input.files[0])
-            i = 0
-            while (collection_mapper[i] != input.classList[0]) {
-                i++
-            }
-            collection_aux = new DataTransfer
-            coll_len = collection.files.length
-            for (var j = 0; j < coll_len; j++) {
-                if (j == i) {
-                    collection_aux.items.add(input.files[0])
-                } else {
-                    collection_aux.items.add(collection.files[j])
-                }
-
-            }
-            collection = collection_aux
-            console.log(collection_aux, collection.files, collection_mapper, input.files[0])
-        }
-
+        index.deletePost(input.classList[0])
     }
 </script>
 
