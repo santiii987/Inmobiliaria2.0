@@ -401,7 +401,24 @@ def index():
     return render_template('index-premium.html', barrios = barrios_query, 
     get_properties = p_show, paginas = paginas, pagina = 1)
 
-
+@app.route('/imgPost')
+def imgPost():
+    added_imgs = request.files.getlist('imgs')
+    added_imgs_count = len(added_imgs)
+    print(added_imgs[0].filename)
+    #Condicional por si el input no trae ninguna imagen
+    if added_imgs[0].filename != '' and added_imgs_count <= 15:
+        added_imgs.pop()
+        store_imgs('buffer',added_imgs)
+        return True
+    else:
+        return False
+@app.route('/imgDelete')
+def imgDelete():
+    del_check = del_imgs('buffer',request.form['id'])
+    if del_check is None:
+        return False
+    return del_check
 @app.route('/page')
 #@profile
 def page():
@@ -1081,7 +1098,8 @@ def profile(id):
 # @login_required
 def insertation():
     form = PropertyForm()
-    fotos_count = len(form.fotos.data)
+    path_to_buffer = imgs_dir + '/' + 'buffer'
+    fotos_count = len(os.listdir(path_to_buffer))
     flag = True
     print('asd',form.fotos.data)
     if form.validate_on_submit():
@@ -1102,16 +1120,8 @@ def insertation():
             operacion = Operaciones.query.filter_by(operacion = form.data['operacion']).first()
             tipo_propiedad = Tipo_propiedad.query.filter_by(tipo_propiedad = form.data['tipo_propiedad']).first()
             print(form.fotos.data)
-            added_imgs = request.files.getlist('fotos')
-            added_imgs_count = len(added_imgs)
-            print(added_imgs[0].filename)
-            #Condicional por si el input no trae ninguna imagen
-            if added_imgs[0].filename != '' and added_imgs_count <= 15:
-                added_imgs.pop()
-                path_to_ref = imgs_dir + '/' + request.form['ref']
-                store_imgs(request.form['ref'],added_imgs)
-            else:
-                flash('A ocurrido un error en la sección de fotos')
+            path_to_ref = imgs_dir + '/' + request.form['ref']
+            os.rename(path_to_buffer,path_to_ref)
             propietario_query = Propietarios.query.filter_by(telefono = form.data['telefono']).first()
             if propietario_query is None:
                 propietario_add = Propietarios(nombre = form.data['nombre'], apellido = form.data['apellido'], email = form.data['email'], telefono = form.data['telefono'])     
