@@ -74,9 +74,11 @@
             <div class="update-fotos"
                 style="overflow-x: scroll; text-align: center;border-top: rgba(128, 128, 128, 0.363) 1px solid;border-bottom: rgba(128, 128, 128, 0.363) 1px solid;padding: 1rem;">
                 <span><h3>Fotos:  <strong><span id = "counter">0</span>/15</span></h3><span id="picErr"></span></strong>
-                <div class="first-row"></div>
-                <div class="second-row"></div>
-                <div class="third-row"></div>
+                <div>
+                    <div class="first-row"></div>
+                    <div class="second-row"></div>
+                    <div class="third-row"></div>
+                </div>
             </div>
         </div>
         <div class="rest-of-data" style="padding: 1rem;" id ="media">
@@ -103,19 +105,102 @@
     //                  remove Preview obj
     //                  
 
-    imgs = []
+    
+    imgs.push(i)
+    class Preview{
+        constructor(img){
+            this.img = img
+        }
+        createPreview(img){
+            newPh = "<div class='new' id ='" + img.get_id() + "' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='" + img.get_img() + "' class='div-foto" + img.get_id() + "' height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <input style='width:22rem' type='file' class = '" + img.get_id() + "' onchange='changeNew(this);'> \
+                                <a href='#' class = '" + img.get_id() + "' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>"
+            return newPh
+        
+        }
+        render(rows_class, elements_per_row){
+            for (row in rows_class){
+                current_elements = row.children().length
+                if (current_elements < elements_per_row){
+                    row.append(this.createPreview(this.img))
+                }
+            }
+        }
+        deletePreview(){
 
-    function assignIndex(){
+        }
+    }
+    class Img{
+        constructor(img,imgsArrayInst){
+            this.img = img
+            this.id = imgsArrayInst.add()
+        }
+        get_id(){
+            return this.id
+        }
+        get_img(){
+            return this.img
+        }
+        
 
     }
-    function createPreview(img){
-
+    class ImgsArray{
+        imgs = []
+        add_img(img){
+            this.imgs.push(img)
+            console.log('Img added to array')
+        }
+        get_Imgs(){
+            return this.imgs
+        }
+        to_form(){
+            imgsForm = new FormData
+            imgsForm.append('imgs',this.imgs)
+            return imgsForm
+        }
+        postImgs(){
+            $.ajax({
+                url: '/imgsPost',
+                type: 'post',
+                data: this.to_form(),
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if (response != 0){
+                        preview = new Preview(this.imgs)
+                        preview.render($('.rows'), 5)
+                    }else{
+                        alert('Hubo un error con las imagenes')
+                    }
+                },
+            })        
+        }
     }
-    function addImgAPI(img){
-
-    }
-    function delImgAPI(index){
-
+    class ImgIndexing{
+        indexArray = []
+        lastIndex = 0
+        get_indexArray(){
+            return this.indexArray
+        }
+        add(){
+            this.lastIndex++
+            indexArray.push(lastIndex)
+            return lastIndex
+        }
+        position(x){
+            return this.indexArray.indexOf(x)
+        }
+        delete(x){
+            indexArray.splice(this.position(x),1)
+        }
     }
     function readURL(input) {
         if (input.files) {
