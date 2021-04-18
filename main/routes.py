@@ -127,7 +127,7 @@ def get_imgs(ref):
     prop_phs = []
     os.chdir(imgs_dir + ref)
     imgs = os.listdir()
-    for i in imgs:
+    for i in (img for i,img in enumerate(imgs) if i<15):
         ph = open(i,'rb')
         im = base64.b64encode(ph.read()).decode('utf-8')
         ph.close()
@@ -416,6 +416,25 @@ def imgPost():
 @app.route('/imgDelete')
 def imgDelete():
     del_check = del_imgs('buffer',request.form['id'])
+    if del_check is None:
+        return False
+    return del_check
+
+@app.route('/imgPostUpdate')
+def imgPost():
+    added_imgs = request.files.getlist('imgs')
+    added_imgs_count = len(added_imgs)
+    print(added_imgs[0].filename)
+    #Condicional por si el input no trae ninguna imagen
+    if added_imgs[0].filename != '' and added_imgs_count <= 15:
+        added_imgs.pop()
+        add_imgs(imgs_dir + '/' + request.form['ref'],added_imgs,request.form['id'])
+        return True
+    else:
+        return False
+@app.route('/imgDeleteUpdate')
+def imgDelete():
+    del_check = del_imgs(request.form['ref'],request.form['id'])
     if del_check is None:
         return False
     return del_check
@@ -1003,49 +1022,13 @@ def about():
 @app.route('/edit-property/<int:id>', methods=['POST'])
 #@login_required
 def edit_property(id):
-    print(request.files.getlist('change_pic[]'))
-    change_pic = [a for a in request.files.getlist('change_pic[]') if a.filename != '']
-    print(change_pic)
     form = PropertyForm()
     flag = True
-    added_imgs = request.files.getlist('pics')
     get_property = Properties.query.get(id)
     path_to_ref = imgs_dir + '/' + get_property.ref
     all_imgs = os.listdir(path_to_ref)
     # Check when a pic is re-changed (if is pushed to change_pic array or changed content within same index)
-    if request.args.getlist('change[]'):
-        updates_imgs = zip(request.args.getlist('change[]') ,change_pic)
-        for update in updates_imgs:
-            print('werrrrrrrrr',update[1])
-            fext = update[1].filename.split('.')
-            print(fext[-1])
-            img_fullname = all_imgs[int(update[0])-1]
-            os.remove(path_to_ref + '/' + img_fullname)
-            im = Image.open(update[1]).save(path_to_ref + '/' + str(update[0]) + '.' + fext[-1])
-
-    if request.args.getlist('delete[]'): 
-        deletes = request.args.getlist('delete[]')
-        del_check = del_imgs(get_property.ref,deletes)
-
-    added_imgs = request.files.getlist('pics')
-    print(added_imgs[0].filename)
     #Condicional por si el input no trae ninguna imagen
-    if added_imgs[0].filename != '':
-        all_imgs = os.listdir(path_to_ref)
-        added_imgs_count = len(added_imgs)
-        total_imgs = len(all_imgs)
-        i = 0
-        while (i < added_imgs_count and total_imgs < 15):
-            ext = added_imgs[i].filename.split('.')
-            print(ext)
-            img_check = add_imgs(path_to_ref,added_imgs[i], str(total_imgs+1) +'.'+ ext[-1])
-            i+=1
-            total_imgs =+ 1
-        pics_amount_condition_check = i == added_imgs_count
-        if (not pics_amount_condition_check):
-            flag = False
-            flash('Demasiadas fotos, las ultimas ' + str(added_imgs_count-i) + ' no fueron ingresadas')
-
     if form.validate_on_submit() and flag:       
         ref_check = Properties.query.filter_by(ref = form.data['ref']).first()
         if (form.data['precio_dolares'] == '' and form.data['precio_dolares'] == ''):
