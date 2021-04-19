@@ -146,6 +146,14 @@
         get_img(){
             return this.img
         }
+        get_view(){
+            let reader = new FileReader();
+                reader.onload = function (e) { 
+                    return e.target.result
+                } 
+            reader.readAsDataURL(this.img);
+        
+        }
         
 
     }
@@ -155,15 +163,11 @@
             this.imgs.push(img)
             console.log('Img added to array')
         }
-        get_imgs(){
+        get_imgs_view(){
             imgs = []
             for (img in this.imgs){
-                let reader = new FileReader();
-                reader.onload = function (e) { 
-                    imgs.push(e.target.result)
-                } 
-                reader.readAsDataURL(img);
-            }
+                imgs.push(img.get_view())
+            } 
             return imgs
         }
         to_form(){
@@ -232,13 +236,13 @@
         if (input.files) {
             fotos_count = input.files.length
             if (fotos + fotos_count > 15) {
-                window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + " fotos de mas")
+                window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + "fotos de mas")
             } else {
                 var imgs = input.files 
                 imgArray = new ImgsArray()
                 for (element of imgs) {
-                    img = new Img(element)
-                    imgArray.add_img()
+                    img = new Img(element, index)
+                    imgArray.add_img(img)
                 }
                 imgArray.postImgs()        
             }

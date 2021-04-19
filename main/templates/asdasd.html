@@ -121,160 +121,161 @@
                 onchange="readURL(this);" type="file">
         </div>
 
-<script>
+
+    <script>
     collection = new DataTransfer();
     collection_mapper = []
+    removed_index = []
     addedPhs = 0
-    change_params_array = []
-    fotos = document.getElementsByClassName('db_foto_up').length
-    console.log(fotos)
+    fotos = document.getElementsByClassName('new').length
+    console.log("Fotos: ", fotos)
     document.getElementById('counter').innerHTML = fotos
-    $('#da-modal').submit(function (e){
-        phsForm = document.getElementById('fotos')
-        phsForm.files = collection.files
-        changed_count = change_params_array.length
-        for(i=0;i<changed_count;i++){
+    file_fields = document.getElementsByName('fotos')
+    position_id = []
 
-            param =  'change[]=' + change_params_array[i];
-            addParam(param);
+    imgs.push(i)
+    class Preview{
+        constructor(img){
+            this.img = img
         }
-    });
+        createPreview(img){
+            newPh = "<div class='new' id ='" + img.get_id() + "' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='" + img.get_img() + "' class='div-foto" + img.get_id() + "' height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '" + img.get_id() + "' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>"
+            return newPh
+        
+        }
+        render(rows_class, elements_per_row){
+            for (row in rows_class){
+                current_elements = row.children().length
+                if (current_elements < elements_per_row){
+                    row.append(this.createPreview(this.img))
+                }
+            }
+        }
+        deletePreview(){
+
+        }
+    }
+    class Img{
+        constructor(img,imgsArrayInst){
+            this.img = img
+            this.id = imgsArrayInst.add()
+        }
+        get_id(){
+            return this.id
+        }
+        get_img(){
+            return this.img
+        }
+        
+
+    }
+    class ImgsArray{
+        imgs = []
+        add_img(img){
+            this.imgs.push(img)
+            console.log('Img added to array')
+        }
+        get_imgs(){
+            imgs = []
+            for (img in this.imgs){
+                let reader = new FileReader();
+                reader.onload = function (e) { 
+                    imgs.push(e.target.result)
+                } 
+                reader.readAsDataURL(img);
+            }
+            return imgs
+        }
+        to_form(){
+            imgsForm = new FormData
+            imgsForm.append('imgs',this.imgs)
+            return imgsForm
+        }
+        postImgs(){
+            $.ajax({
+                url: '/imgsPost',
+                type: 'post',
+                data: this.to_form(),
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if (response != 0){
+                        document.getElementById('counter').innerHTML = index.get_indexArray().length;
+                        for (img in this.get_imgs())
+                            preview = new Preview(img)
+                            preview.render($('.rows'), 5)
+                    }else{
+                        alert('Hubo un error con las imagenes')
+                    }
+                },
+            });        
+        }
+    }
+    class ImgIndexing{
+        indexArray = []
+        lastIndex = 0
+        get_indexArray(){
+            return this.indexArray
+        }
+        add(){
+            this.lastIndex++
+            indexArray.push(lastIndex)
+            return lastIndex
+        }
+        position(x){
+            return this.indexArray.indexOf(x)
+        }
+        delete(x){
+            indexArray.splice(this.position(x),1)
+        }
+        deletePost(x){
+            $.ajax({
+                url: '/imgsDelete',
+                type: 'post',
+                data: this.position(x),
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if (response != 0){
+                        document.getElementById(x).remove();
+                        this.delete(x)
+                        document.getElementById('counter').innerHTML = this.indexArray.length;
+                    }else{
+                        alert('Hubo un error con las imagenes')
+                    }
+                },
+            }); 
+        }
+    }
     function readURL(input) {
         if (input.files) {
             fotos_count = input.files.length
             if (fotos + fotos_count > 15) {
-                window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + " fotos de mas")
+                window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + "fotos de mas")
             } else {
-                var imgs = input.files
-                console.log(collection)
+                var imgs = input.files 
+                imgArray = new ImgsArray()
                 for (element of imgs) {
-                    fotos += 1
-                    collection.items.add(element)
-                    console.log(element)
-                    let reader = new FileReader();
-                    reader.onload = function (e) {
-                        addedPhs += 1
-                        collection_mapper.push(addedPhs)
-                        newPh = "<div class='new' id ='" + addedPhs + "' style='padding: 0.5rem;'> \
-                            <div class='dropdown'> \
-                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
-                            <img src='" + e.target.result + "' class='div-foto" + addedPhs + "' height='200'> \
-                                </a> \
-                                    <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
-                                        <input style='width:22rem' type='file' class = '" + addedPhs + "' onchange='changeNew(this);'> \
-                                        <a href='#' class = '" + addedPhs + "' onclick='deleteNew(this);'>Eliminar foto</a> </div> </div> </div>"
-
-                        first = $('.first-row').children().length
-                        second = $('.second-row').children().length
-                        third = $('.third-row').children().length
-                        if (first < 5) {
-                            $('.first-row').append(newPh)
-                        } else if (second < 5) {
-                            $('.second-row').append(newPh)
-                        } else {
-                            $('.third-row').append(newPh)
-                        }
-                        counter = document.getElementById('counter').innerHTML = fotos;
-                    };
-                    reader.readAsDataURL(element);
+                    img = new Img(element, index)
+                    imgArray.add_img(img)
                 }
+                imgArray.postImgs()        
             }
-        }
-    }
-    function addParam(param) {
-        form = document.getElementById('da-modal')
-        if (form.getAttribute('action').indexOf('?') != -1) {
-            form_action = form.setAttribute('action', form.getAttribute('action') + '&' + param);
-            console.log('asdadasddsa0', form_action);
-        } else {
-            form_action = form.setAttribute('action', form.getAttribute('action') + '?' + param);
-            console.log(form_action);
-        }
-        console.log(form.getAttribute('action'))
-    }
-
-    function deletePic(input) {
-        delImg_aux = new DataTransfer();
-        fotos += -1
-        $('#counter').html(fotos)
-        param = input.classList[0] + '[]=' + input.classList[1];
-        addParam(param)
-        imgDel = document.getElementById('div' + input.classList[1]).remove();
-        check_duplicates = change_params_array.indexOf(input.classList[1])
-        if (check_duplicates != -1){
-            imgDel_bin = document.getElementsByClassName('change ' + input.classList[1])
-            changed_count = change_params_array.lenght()
-            for (i=0;i<changed_count;i++){
-                if(i != check_duplicates){
-                    delImg_aux.items.add(imgDel_bin.files[i])
-                }
-            }
-            imgDel_bin.files = delImg_aux.files
-            change_params_array.splice(check_duplicates,1)
         }
     }
     function deleteNew(input) {
-        fotos += -1
-        $('#counter').html(fotos)
-        i = 0
-        while (collection_mapper[i] != input.classList[0]) {
-            i++
-        }
-        collection_aux = new DataTransfer
-        coll_len = collection.files.length
-        for (var j = 0; j < coll_len; j++) {
-            if (j == i) {
-                continue
-            } else {
-                collection_aux.items.add(collection.files[j])
-            }
-
-        }
-        collection = collection_aux
-        collection_mapper.splice(i, 1)
-        console.log(collection.files)
-        document.getElementById(input.classList[0]).remove();
+        index.deletePost(input.classList[0])
     }
-    function changeNew(input) {
-        if (input.files) {
-            reader = new FileReader
-            reader.onload = (e) => {
-                console.log(input.classList[0])
-                $('.div-foto' + input.classList[0]).attr('src', e.target.result)
-            }
-            reader.readAsDataURL(input.files[0])
-            i = 0
-            while (collection_mapper[i] != input.classList[0]) {
-                i++
-            }
-            collection_aux = new DataTransfer
-            coll_len = collection.files.length
-            for (var j = 0; j < coll_len; j++) {
-                if (j == i) {
-                    collection_aux.items.add(input.files[0])
-                } else {
-                    collection_aux.items.add(collection.files[j])
-                }
 
-            }
-            collection = collection_aux
-            console.log(collection_aux, collection.files, collection_mapper, input.files[0])
-        }
-
-    }
-    function changePic(input) {
-        if (input.files) {
-            check_duplicates = change_params_array.indexOf(input.classList[1])
-            if (check_duplicates === -1){
-                change_params_array.push(input.classList[1])
-            }
-            let reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById('div-foto' + input.classList[1]).setAttribute('src', e.target.result);
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
 </script>
 <label>Propietarios:</label>
 <select onchange="getProp(this.value)">
