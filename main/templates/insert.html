@@ -81,7 +81,7 @@
         </div>
         <div class="rest-of-data" style="padding: 1rem;" id ="media">
             <label for="fotos"><strong>Ingresar Fotos</strong></label> <input required="required" id="fotos" name="fotos"
-                onchange="readURL(this);" type="file">
+                onchange="readURL(this);" type="file" multiple='multiple'>
         </div>
         <a id="next-one" onclick="nextStep(2)" style="color: rgb(1, 167, 1);" href="#column-two">| Siguiente >></a>
     </div><!-- /Column 1 -->
@@ -95,25 +95,16 @@
     document.getElementById('counter').innerHTML = fotos
     file_fields = document.getElementsByName('fotos')
     position_id = []
-    // Pic or pics uploaded
-    // Pics saved on input field & Index created
-    // Preview HTML created for each pic (preview obj id = Index)
-    // AJAX post to server 
-    // onDelete case : 
-    //                  remove Preview obj
-    //                  
-
     
-    imgs.push(i)
     class Preview{
         constructor(img){
             this.img = img
         }
         createPreview(img){
-            newPh = "<div class='new' id ='" + img.get_id() + "' style='padding: 0.5rem;'> \
+            var newPh = "<div class='new' id ='" + img.get_id() + "' style='padding: 0.5rem;'> \
                         <div class='dropdown'> \
                             <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
-                                <img src='" + img.get_img() + "' class='div-foto" + img.get_id() + "' height='200'> \
+                                <img src='" + img.get_view() + "' class='div-foto" + img.get_id() + "' height='200'> \
                             </a> \
                             <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
                                 <a href='#' class = '" + img.get_id() + "' onclick='deleteNew(this);'>Eliminar foto</a> \
@@ -124,7 +115,7 @@
         
         }
         render(rows_class, elements_per_row){
-            for (row in rows_class){
+            for (let row of rows_class){
                 current_elements = row.children().length
                 if (current_elements < elements_per_row){
                     row.append(this.createPreview(this.img))
@@ -163,31 +154,48 @@
             this.imgs.push(img)
             console.log('Img added to array')
         }
+        get_imgs_name(){
+            var names = []
+            for(img of this.imgs){
+                names.push(img.get_img().name)
+            }
+            return names
+        }
+
         get_imgs_view(){
-            imgs = []
-            for (img in this.imgs){
+            var imgs = []
+            for (img of this.imgs){
                 imgs.push(img.get_view())
             } 
+            console.log(imgs)
             return imgs
         }
         to_form(){
-            imgsForm = new FormData
-            imgsForm.append('imgs',this.imgs)
+            var imgsForm = new FormData()
+            for (img of this.imgs){
+                imgsForm.append('imgs',img.get_img())
+            }
+            console.log(img)
             return imgsForm
         }
         postImgs(){
+            var imgs_view = this.get_imgs_view()
             $.ajax({
                 url: '/imgsPost',
                 type: 'post',
+                dataType: 'json',
                 data: this.to_form(),
                 contentType: false,
                 processData: false,
                 success: function(response){
+                    console.log(response)
                     if (response != 0){
                         document.getElementById('counter').innerHTML = index.get_indexArray().length;
-                        for (img in this.get_imgs())
-                            preview = new Preview(img)
+                        console.log(imgs_view)
+                        for (img of imgs_view){
+                            let preview = new Preview(img)
                             preview.render($('.rows'), 5)
+                        }
                     }else{
                         alert('Hubo un error con las imagenes')
                     }
@@ -203,14 +211,14 @@
         }
         add(){
             this.lastIndex++
-            indexArray.push(lastIndex)
-            return lastIndex
+            this.indexArray.push(this.lastIndex)
+            return this.lastIndex
         }
         position(x){
             return this.indexArray.indexOf(x)
         }
         delete(x){
-            indexArray.splice(this.position(x),1)
+            this.indexArray.splice(this.position(x),1)
         }
         deletePost(x){
             $.ajax({
@@ -239,11 +247,14 @@
                 window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + "fotos de mas")
             } else {
                 var imgs = input.files 
-                imgArray = new ImgsArray()
+                imgArray = new ImgsArray();
                 for (element of imgs) {
+                    console.log(element.name)
                     img = new Img(element, index)
+                    console.log(img.get_img().name)
                     imgArray.add_img(img)
                 }
+                console.log(imgArray.get_imgs_name())
                 imgArray.postImgs()        
             }
         }
