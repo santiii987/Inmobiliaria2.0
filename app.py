@@ -17,4 +17,4 @@ from main import app
 ################# GIT TEST ###########################
 #SERVER SETUP (DEBUGGER)-------------------------------
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    app.run(port=3001, debug=True)
