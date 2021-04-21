@@ -196,13 +196,16 @@
             return imgs
         }
         to_form(){
-            imgsForm = new FormData
-            imgsForm.append('imgs',this.imgs)
+            var imgsForm = new FormData
+            for (img in this.imgs){
+                imgsForm.append('imgs',img.get_img())
+            }
+            console.log(img)
             return imgsForm
         }
         postImgs(){
             $.ajax({
-                url: '/imgsPost',
+                url: '/imgsPostUpdate',
                 type: 'post',
                 data: this.to_form(),
                 contentType: false,
@@ -239,7 +242,7 @@
         }
         deletePost(x){
             $.ajax({
-                url: '/imgsDelete',
+                url: '/imgsDeleteUpdate',
                 type: 'post',
                 data: this.position(x),
                 contentType: false,
