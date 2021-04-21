@@ -74,6 +74,7 @@ def profile(fnc):
 # def caca():
 #     sort_imgs()
 imgs_dir = os.getcwd() + '/main/static/imgs/'
+buffer_dir = imgs_dir + 'buffer/'
 def properties_mtx(properties, columns):
     print(imgs_dir)
     aux = []
@@ -98,8 +99,10 @@ def store_imgs(ref,imgs):
     for i,img in enumerate(imgs):
         fext = img.filename.split('.')
         im = Image.open(img).save(str(i+1) + '.' + fext[-1])
-def add_imgs(path_ref,img,id):
-    im = Image.open(img).save(path_ref + '/' + str(id))
+def add_imgs(path_ref,img):
+    id = len(os.listdir(path_ref)) + 1
+    im = Image.open(img)
+    im.save(path_ref + '/' + str(id) + '.' + im.format)
 
 def del_imgs(ref,id):
     id = [int(i) for i in id]
@@ -401,43 +404,44 @@ def index():
     return render_template('index-premium.html', barrios = barrios_query, 
     get_properties = p_show, paginas = paginas, pagina = 1)
 
-@app.route('/imgPost')
+@app.route('/imgsPost', methods=['POST'])
 def imgPost():
     added_imgs = request.files.getlist('imgs')
+    print(request.json , request.files.getlist('imgs'))
     added_imgs_count = len(added_imgs)
     print(added_imgs[0].filename)
     #Condicional por si el input no trae ninguna imagen
-    if added_imgs[0].filename != '' and added_imgs_count <= 15:
-        added_imgs.pop()
-        store_imgs('buffer',added_imgs)
-        return True
+    if added_imgs_count <= 15:
+        for img in added_imgs:
+            add_imgs(buffer_dir,img)
+        return "1"
     else:
-        return False
-@app.route('/imgDelete')
+        return "0"
+@app.route('/imgsDelete', methods=['POST'])
 def imgDelete():
     del_check = del_imgs('buffer',request.form['id'])
     if del_check is None:
-        return False
-    return del_check
+        return "0"
+    return "1"
 
-@app.route('/imgPostUpdate')
-def imgPost():
+@app.route('/imgsPostUpdate', methods=['POST'])
+def imgPostUpdate():
     added_imgs = request.files.getlist('imgs')
     added_imgs_count = len(added_imgs)
     print(added_imgs[0].filename)
     #Condicional por si el input no trae ninguna imagen
-    if added_imgs[0].filename != '' and added_imgs_count <= 15:
-        added_imgs.pop()
-        add_imgs(imgs_dir + '/' + request.form['ref'],added_imgs,request.form['id'])
-        return True
+    if added_imgs_count <= 15:
+        for img in added_imgs:
+            add_imgs(imgs_dir + '/' + request.form['ref'],img)
+        return "1"
     else:
-        return False
-@app.route('/imgDeleteUpdate')
-def imgDelete():
+        return "0"
+@app.route('/imgsDeleteUpdate', methods=['POST'])
+def imgDeleteUpdate():
     del_check = del_imgs(request.form['ref'],request.form['id'])
     if del_check is None:
-        return False
-    return del_check
+        return "0"
+    return "1"
 @app.route('/page')
 #@profile
 def page():
@@ -1105,6 +1109,7 @@ def insertation():
             print(form.fotos.data)
             path_to_ref = imgs_dir + '/' + request.form['ref']
             os.rename(path_to_buffer,path_to_ref)
+            os.mkdir(path_to_buffer)
             propietario_query = Propietarios.query.filter_by(telefono = form.data['telefono']).first()
             if propietario_query is None:
                 propietario_add = Propietarios(nombre = form.data['nombre'], apellido = form.data['apellido'], email = form.data['email'], telefono = form.data['telefono'])     
