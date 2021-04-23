@@ -62,55 +62,49 @@
             <div class="update-fotos"
                 style="overflow-x: scroll; text-align: center;border-top: rgba(128, 128, 128, 0.363) 1px solid;border-bottom: rgba(128, 128, 128, 0.363) 1px solid;padding: 1rem;">
                 <span><h3>Fotos:  <strong><span id = 'counter'>0</span>/15</span></h3></strong>
-                <div class="first-row"></div>
-                <div class="second-row"></div>
-                <div class="third-row"></div>
+                <div class="rows first-row"></div>
+                <div class="rows second-row"></div>
+                <div class="rows third-row"></div>
                 {% for foto in fotos %}
                 {% if loop.index >= 6 and loop.index < 11%}
                 <script>
-                $('.second-row').append("<div class='db_foto_up' style='padding: 0.5rem;' id = 'div{{loop.index}}'> \
-                    <div class='dropdown'>\
-                    <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
-                    <img src='data:image/png;base64,{{foto}}' height='200' id='div-foto{{loop.index}}'  class='div-foto' width='200'>\
-                    </a>\
-                        <div style='padding:1rem;' class='dropdown-menu' aria-labelledby='dropdownMenuButton'>\
-                            <input type='file' class='change {{loop.index}} form-control-file' name = 'change_pic[]' onchange='changePic(this);'>Cambiar foto</input> \
-                            <a href='#' class='delete {{loop.index}} dropdown-item' onclick='deletePic(this);'>Eliminar foto</a>\
-                        </div>\
-                    </div>\
-                </div>"
-
-                )
+                    
+                $('.second-row').append("<div class='new db_foto_up' id ='{{loop.index}}' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='data:image/png;base64,{{foto}}' id='{{loop.index}}'  height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '{{loop.index}}' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>")
                 </script>
                 {%elif loop.index >= 11%}
                 <script>
-                    $('.third-row').append("<div class='db_foto_up' style='padding: 0.5rem;' id = 'div{{loop.index}}'> \
-                        <div class='dropdown'>\
-                        <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
-                    <img src='data:image/png;base64,{{foto}}' height='200' id='div-foto{{loop.index}}'  class='div-foto' width='200'>\
-                    </a>\
-                        <div style='padding:1rem;' class='dropdown-menu' aria-labelledby='dropdownMenuButton'>\
-                            <input type='file' class='change {{loop.index}} form-control-file' name = 'change_pic[]' onchange='changePic(this);'>Cambiar foto</input> \
-                            <a href='#' class='delete {{loop.index}} dropdown-item' onclick='deletePic(this);'>Eliminar foto</a>\
-                        </div>\
-                    </div>\
-                </div>"
-
-                    )
+                    $('.third-row').append("<div class='new db_foto_up' id ='{{loop.index}}' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='data:image/png;base64,{{foto}}' id='{{loop.index}}'  height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '{{loop.index}}' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>")
                 </script>
                 {%else%}
                 <script>
-                    $('.first-row').append("<div class='db_foto_up' style='padding: 0.5rem;' id = 'div{{loop.index}}'> \
-                        <div class='dropdown'>\
-                        <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
-                        <img src='data:image/png;base64,{{foto}}' height='200' id='div-foto{{loop.index}}'  class='div-foto' width='200'>\
-                        </a>\
-                        <div style='padding:0.5rem;' class='dropdown-menu' aria-labelledby='dropdownMenuButton'>\
-                            <input style='width:22rem' type='file' class='change {{loop.index}} form-control-file' name='change_pic[]' onchange='changePic(this);'> \
-                            <a href='#' class='delete {{loop.index}} dropdown-item' onclick='deletePic(this);'>Eliminar foto</a>\
-                        </div>\
-                    </div >\
-                </div >")
+                    $('.first-row').append("<div class='new db_foto_up' id ='{{loop.index}}' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='data:image/png;base64,{{foto}}' id='{{loop.index}}'  height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '{{loop.index}}' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>")
                 </script>
                 {%endif%}
                 {%endfor%}
@@ -121,7 +115,183 @@
                 onchange="readURL(this);" type="file">
         </div>
 
-
+        <script>
+            collection = new DataTransfer();
+            collection_mapper = []
+            removed_index = []
+            addedPhs = 0
+            fotos = document.getElementsByClassName('new').length
+            console.log("Fotos: ", fotos)
+            document.getElementById('counter').innerHTML = fotos
+            file_fields = document.getElementsByName('fotos')
+            position_id = []
+            
+            class Preview{
+                constructor(img,view){
+                    this.img = img
+                    this.view = view
+                }
+                createPreview(){
+                    var newPh = "<div class='new db_foto_up' id ='" + this.img.get_id() + "' style='padding: 0.5rem;'> \
+                                <div class='dropdown'> \
+                                    <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                        <img src='" + this.view + "' id='" + this.img.get_id() + "'  height='200'> \
+                                    </a> \
+                                    <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                        <a href='#' class = '" + this.img.get_id() + "' onclick='deleteNew(this);'>Eliminar foto</a> \
+                                    </div> \
+                                </div> \
+                            </div>"
+                    return newPh
+                
+                }
+                render(rows_class, elements_per_row){
+                    var current_elements;
+                    var i = 0
+                    while (rows_class[i].children.length == elements_per_row){
+                        i++
+                    }
+                    $(this.createPreview()).appendTo(rows_class[i])
+                }
+                deletePreview(){
+        
+                }
+            }
+            class Img{
+                constructor(img,imgsArrayInst){
+                    this.img = img
+                    this.id = imgsArrayInst.add()
+                }
+                get_id(){
+                    return this.id
+                }
+                get_img(){
+                    return this.img
+                }
+        
+            }
+            class ImgsArray{
+                imgs = []
+                add_img(img){
+                    this.imgs.push(img)
+                    console.log('Img added to array')
+                }
+                get_imgs_name(){
+                    var names = []
+                    for(let img of this.imgs){
+                        names.push(img.get_img().name)
+                    }
+                    return names
+                }
+        
+                // get_imgs_view(){
+                //     var imgs = []
+                //     for (let img of this.imgs){
+                //         imgs.push(img.get_view())
+                //     } 
+                //     console.log(imgs)
+                //     return imgs
+                // }
+                to_form(){
+                    var imgsForm = new FormData()
+                    for (let img of this.imgs){
+                        imgsForm.append('imgs',img.get_img())
+                    }
+                    return imgsForm
+                }
+                postImgs(){
+                    var imgs = this.imgs
+                    $.ajax({
+                        url: "/imgsPostUpdate/{{ref}}",
+                        type: 'post',
+                        dataType: 'json',
+                        data: this.to_form(),
+                        contentType: false,
+                        processData: false,
+                        success: function(response){
+                            console.log(response)
+                            if (response != 0){
+                                document.getElementById('counter').innerHTML = index.get_indexArray().length;
+                                for (let img of imgs){
+                                    let reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        let preview = new Preview(img,e.target.result)
+                                        preview.render($('.rows'), 5)
+                                    }
+                                    reader.readAsDataURL(img.get_img());
+                                }
+                            }else{
+                                alert('Hubo un error con las imagenes')
+                            }
+                        },
+                    });        
+                }
+            }
+            class ImgIndexing{
+                indexArray = []
+                lastIndex = 0
+                get_indexArray(){
+                    return this.indexArray
+                }
+                add(){
+                    this.lastIndex++
+                    this.indexArray.push(this.lastIndex)
+                    console.log(this.lastIndex,this.indexArray)
+                    return this.lastIndex
+                }
+                position(x){
+                    console.log(this.indexArray)
+                    return this.indexArray.indexOf(x)
+                }
+                delete(x){
+                    this.indexArray.splice(this.position(x),1)
+                }
+                deletePost(x){
+                    var self = this
+                    $.ajax({
+                        url: "/imgsDeleteUpdate/{{ref}}/" + this.position(x),
+                        type: 'delete',
+                        success: function(response){
+                            if (response != 0){
+                                document.getElementById(x).remove();
+                                self.delete(x)
+                                document.getElementById('counter').innerHTML = self.indexArray.length;
+                            }else{
+                                alert('Hubo un error con las imagenes')
+                            }
+                        },
+                    });
+                }
+            }
+            index = new ImgIndexing()
+            for(let i=1;i<=fotos;i++){
+                index.add()
+            }
+            function readURL(input) {
+                if (input.files) {
+                    fotos_count = input.files.length
+                    if (fotos + fotos_count > 15) {
+                        window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + "fotos de mas")
+                    } else {
+                        var imgs = input.files 
+                        var img;
+                        imgArray = new ImgsArray();
+                        for (let element of imgs) {
+                            console.log(element.name)
+                            img = new Img(element, index)
+                            console.log(img.get_img().name)
+                            imgArray.add_img(img)
+                        }
+                        console.log(imgArray.get_imgs_name())
+                        imgArray.postImgs()        
+                    }
+                }
+            }
+            function deleteNew(input) {
+                console.log(input.classList[0])
+                index.deletePost(Number(input.classList[0]))
+            }
+        </script>
     <script>
     collection = new DataTransfer();
     collection_mapper = []

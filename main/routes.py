@@ -98,11 +98,11 @@ def store_imgs(ref,imgs):
     print(os.getcwd())
     for i,img in enumerate(imgs):
         fext = img.filename.split('.')
-        im = Image.open(img).save(str(i+1) + '.' + fext[-1])
+        im = Image.open(img).save(str(i+1) + '.' + fext[-1],quality=15,optimize=True)
 def add_imgs(path_ref,img):
     id = len(os.listdir(path_ref)) + 1
     im = Image.open(img)
-    im.save(path_ref + '/' + str(id) + '.' + im.format)
+    im.save(path_ref + '/' + str(id) + '.' + im.format,quality=15,optimize=True)
 
 # def del_imgs(ref,id):
 #     id = [int(i) for i in id]
@@ -126,10 +126,9 @@ def add_imgs(path_ref,img):
 #         for j in range(idx_mapping,init_imgs):
 #             os.rename(f[j+1][0] + f[j+1][1], f[j][0] + f[j+1][1])
 #     return True
-
+def sort(files):
+    return sorted(files,key=lambda x: int(os.path.splitext(x)[0]))
 def del_imgs(ref,id):
-    def sort(files):
-        return sorted(files,key=lambda x: int(os.path.splitext(x)[0]))
     path_ref = imgs_dir + ref + '/'
     file_list = sort(os.listdir(path_ref))
     print(file_list)
@@ -149,7 +148,7 @@ def del_imgs(ref,id):
 def get_imgs(ref):
     prop_phs = []
     os.chdir(imgs_dir + ref)
-    imgs = os.listdir()
+    imgs = sort(os.listdir())
     for i in (img for i,img in enumerate(imgs) if i<15):
         ph = open(i,'rb')
         im = base64.b64encode(ph.read()).decode('utf-8')
@@ -444,24 +443,28 @@ def imgDelete(id):
         return "0"
     return "1"
 
-@app.route('/imgsPostUpdate', methods=['POST','GET'])
-def imgPostUpdate():
+@app.route('/imgsPostUpdate/<string:ref>', methods=['POST','GET'])
+def imgPostUpdate(ref):
+    print(os.listdir(imgs_dir + ref + '/'))
     added_imgs = request.files.getlist('imgs')
+    print(request.json , request.files.getlist('imgs'))
     added_imgs_count = len(added_imgs)
     print(added_imgs[0].filename)
     #Condicional por si el input no trae ninguna imagen
     if added_imgs_count <= 15:
         for img in added_imgs:
-            add_imgs(imgs_dir + '/' + request.form['ref'],img)
+            add_imgs(imgs_dir + ref + '/',img)
         return "1"
     else:
         return "0"
-@app.route('/imgsDeleteUpdate', methods=['POST','GET'])
-def imgDeleteUpdate():
-    del_check = del_imgs(request.form['ref'],request.form['id'])
+@app.route('/imgsDeleteUpdate/<string:ref>/<int:id>', methods=['DELETE'])
+def imgDeleteUpdate(ref,id):
+    del_check = del_imgs(ref,id)
+    print(os.listdir(imgs_dir + ref + '/'))
     if del_check is None:
         return "0"
     return "1"
+
 @app.route('/page')
 #@profile
 def page():
@@ -1036,7 +1039,7 @@ def update(id):
     barrios = Barrios.query.all()
     print(form.data,get_properties.titulo)
     return render_template('asdasd.html', 
-    form = form,fotos = get_imgs(get_properties.ref), propietarios = propietarios,questions_amount=contactquestions_amount,id = id,barrios = barrios, base64=base64)
+    form = form,fotos = get_imgs(get_properties.ref),ref=get_properties.ref, propietarios = propietarios,questions_amount=contactquestions_amount,id = id,barrios = barrios, base64=base64)
 
 @app.route('/about')
 def about():
@@ -1071,7 +1074,7 @@ def edit_property(id):
                 form.errors[error][0] = 'Valor no valido'
                 print(error)
             return render_template('asdasd.html', 
-            form = form,fotos = fotos, propietarios = propietarios,questions_amount=contactquestions_amount,id = id,barrios = barrios, base64=base64)
+            form = form,fotos = fotos ,ref=get_property.ref,propietarios = propietarios,questions_amount=contactquestions_amount,id = id,barrios = barrios, base64=base64)
         else:
             if get_property.ref != form.data['ref']:
                 os.rename(imgs_dir + get_property.ref, imgs_dir + form.data['ref'])
@@ -1087,7 +1090,7 @@ def edit_property(id):
             form.errors[error][0] = 'Valor no valido'
             print(error)
         return render_template('asdasd.html', 
-        form = form,fotos = fotos, propietarios = propietarios,questions_amount=contactquestions_amount,id = id,barrios = barrios, base64=base64)
+        form = form,fotos = fotos, propietarios = propietarios,ref=get_property.ref,questions_amount=contactquestions_amount,id = id,barrios = barrios, base64=base64)
     return redirect(url_for('admin', section='home'))
 
 
