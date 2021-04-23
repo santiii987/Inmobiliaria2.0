@@ -104,28 +104,48 @@ def add_imgs(path_ref,img):
     im = Image.open(img)
     im.save(path_ref + '/' + str(id) + '.' + im.format)
 
+# def del_imgs(ref,id):
+#     id = [int(i) for i in id]
+#     id.sort()
+#     f = []
+#     f_aux = []
+#     wrk_path = imgs_dir + ref + '/'
+#     imgs = os.listdir(wrk_path)
+#     imgs.sort(key=lambda x: x[1:])
+#     imgs = imgs[id[0]-1:]
+#     init_imgs = len(imgs)
+#     print(init_imgs,imgs,id)
+#     for j in range(init_imgs):
+#         f.append(os.path.splitext(wrk_path + imgs[j]))
+#         print(f)
+#     for delete_offset,i in enumerate(id):
+#         idx_mapping = i-id[0]-delete_offset
+#         print(idx_mapping,f[idx_mapping][0])
+#         init_imgs -= 1
+#         os.remove(f[idx_mapping][0]+f[idx_mapping][1])
+#         for j in range(idx_mapping,init_imgs):
+#             os.rename(f[j+1][0] + f[j+1][1], f[j][0] + f[j+1][1])
+#     return True
+
 def del_imgs(ref,id):
-    id = [int(i) for i in id]
-    id.sort()
-    f = []
-    f_aux = []
-    wrk_path = imgs_dir + ref + '/'
-    imgs = os.listdir(wrk_path)
-    imgs.sort(key=lambda x: x[1:])
-    imgs = imgs[id[0]-1:]
-    init_imgs = len(imgs)
-    print(init_imgs,imgs,id)
-    for j in range(init_imgs):
-        f.append(os.path.splitext(wrk_path + imgs[j]))
-        print(f)
-    for delete_offset,i in enumerate(id):
-        idx_mapping = i-id[0]-delete_offset
-        print(idx_mapping,f[idx_mapping][0])
-        init_imgs -= 1
-        os.remove(f[idx_mapping][0]+f[idx_mapping][1])
-        for j in range(idx_mapping,init_imgs):
-            os.rename(f[j+1][0] + f[j+1][1], f[j][0] + f[j+1][1])
-    return True
+    def sort(files):
+        return sorted(files,key=lambda x: int(os.path.splitext(x)[0]))
+    path_ref = imgs_dir + ref + '/'
+    file_list = sort(os.listdir(path_ref))
+    print(file_list)
+    os.remove(path_ref + file_list[id])
+    new_file_list = sort(os.listdir(path_ref))
+    new_file_list_lenght = len(new_file_list)
+    if (new_file_list_lenght == id or new_file_list_lenght == 0):
+        #Si el largo es ==id entonces id era el ultimo elemento,
+        #si es igual a 0 no hay nada, en ninguno de los casos hay que hacer algo mas
+        return True
+    else:
+        files_to_rename = new_file_list[id:]
+        for f in files_to_rename:
+            fname, fext = os.path.splitext(f)
+            os.rename(path_ref + fname + fext, path_ref + str(int(fname) - 1) + fext)
+        return True
 def get_imgs(ref):
     prop_phs = []
     os.chdir(imgs_dir + ref)
@@ -404,7 +424,7 @@ def index():
     return render_template('index-premium.html', barrios = barrios_query, 
     get_properties = p_show, paginas = paginas, pagina = 1)
 
-@app.route('/imgsPost', methods=['POST'])
+@app.route('/imgsPost', methods=['POST','GET'])
 def imgPost():
     added_imgs = request.files.getlist('imgs')
     print(request.json , request.files.getlist('imgs'))
@@ -417,14 +437,14 @@ def imgPost():
         return "1"
     else:
         return "0"
-@app.route('/imgsDelete', methods=['POST'])
-def imgDelete():
-    del_check = del_imgs('buffer',request.form['id'])
+@app.route('/imgsDelete/<int:id>', methods=['DELETE'])
+def imgDelete(id):
+    del_check = del_imgs('buffer',id)
     if del_check is None:
         return "0"
     return "1"
 
-@app.route('/imgsPostUpdate', methods=['POST'])
+@app.route('/imgsPostUpdate', methods=['POST','GET'])
 def imgPostUpdate():
     added_imgs = request.files.getlist('imgs')
     added_imgs_count = len(added_imgs)
@@ -436,7 +456,7 @@ def imgPostUpdate():
         return "1"
     else:
         return "0"
-@app.route('/imgsDeleteUpdate', methods=['POST'])
+@app.route('/imgsDeleteUpdate', methods=['POST','GET'])
 def imgDeleteUpdate():
     del_check = del_imgs(request.form['ref'],request.form['id'])
     if del_check is None:
