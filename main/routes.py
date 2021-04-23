@@ -99,10 +99,12 @@ def store_imgs(ref,imgs):
     for i,img in enumerate(imgs):
         fext = img.filename.split('.')
         im = Image.open(img).save(str(i+1) + '.' + fext[-1],quality=15,optimize=True)
+        im.close()
 def add_imgs(path_ref,img):
     id = len(os.listdir(path_ref)) + 1
     im = Image.open(img)
     im.save(path_ref + '/' + str(id) + '.' + im.format,quality=15,optimize=True)
+    im.close()
 
 # def del_imgs(ref,id):
 #     id = [int(i) for i in id]
@@ -150,10 +152,10 @@ def get_imgs(ref):
     os.chdir(imgs_dir + ref)
     imgs = sort(os.listdir())
     for i in (img for i,img in enumerate(imgs) if i<15):
-        ph = open(i,'rb')
-        im = base64.b64encode(ph.read()).decode('utf-8')
-        ph.close()
+        with open(i,'rb') as ph:
+            im = base64.b64encode(ph.read()).decode('utf-8')
         prop_phs.append(im)
+    os.chdir(imgs_dir)
     return prop_phs
 
 def get_img(ref):
@@ -387,20 +389,6 @@ def paginacion(page,step,id,prop_query):
         else:
             get_properties = prop_query.filter(Properties.pausado == False,Properties.destacado == 1,Properties.id < id).limit(9).all()
             return get_properties
-@app.route('/caca')
-def caca():
-    a1 = Properties.query.all()
-    start = os.getcwd()
-    for a in a1:
-        os.mkdir(start + '/main/static/imgs/' + a.ref)
-        os.chdir(start + '/main/static/imgs/' + a.ref)
-        for i in range(1,15):
-            pic = getattr(a,'photos'+ str(i))
-            if pic is not None:
-                im = Image.open(io.BytesIO(pic))
-                im.save(os.getcwd() +'/'+ str(i) + '.JPEG')
-                im.close()
-
 
 @app.route('/')
 #@profile
@@ -979,7 +967,7 @@ def property_questions():
 
 @profile
 @app.route('/admin/<section>')
-#@login_required
+@login_required
 def admin(section):
     test = []
     form = PropertyForm()
@@ -1029,7 +1017,7 @@ def admin(section):
 
 @profile      
 @app.route('/update/<id>', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def update(id):
     contactquestions_amount = Contactquestions.query.filter_by(read=False).count()
     get_properties = Properties.query.get(id)
@@ -1047,7 +1035,7 @@ def about():
     
 @profile
 @app.route('/edit-property/<int:id>', methods=['POST'])
-#@login_required
+@login_required
 def edit_property(id):
     form = PropertyForm()
     flag = True
@@ -1105,7 +1093,7 @@ def profile(id):
     comfort = comodidades,
     seguridad = seguridad)
 @app.route('/insertation', methods=['POST','GET'])
-# @login_required
+@login_required
 def insertation():
     form = PropertyForm()
     path_to_buffer = imgs_dir + '/' + 'buffer'
@@ -1322,11 +1310,11 @@ def login():
     admin_check = Admins.query.all() 
     username = request.form['username']
     password = request.form['userpass']
-    if admin_check != []:
+    if admin_check is not None:
         i = 0
-        while username != admin[i].user and password != admin[i].password:
+        while username != admin_check[i].user and password != admin_check[i].password:
             i+=1
-        if username == admin[i].user:
+        if username == admin_check[i].user and password == admin_check[i].password:
             session['username'] = username
             print(g.user)
             return redirect(url_for('admin', section="home"))
