@@ -7,7 +7,7 @@ class Properties(db.Model):
     fecha_publicacion = db.Column(db.String(10), nullable = False)
     #cargar en us$ o en $ y usar CurrencyConverter para cargar el otro
     precio_dolares = db.Column(db.Integer)
-    gastos_comunes = db.Column(db.String)
+    gastos_comunes = db.Column(db.Integer)
     precio_pesos = db.Column(db.Integer)
     barrio_id = db.Column(db.Integer,db.ForeignKey('barrios.id'), nullable = False)
     operacion_id = db.Column(db.Integer,db.ForeignKey('operaciones.id'), nullable = False)
