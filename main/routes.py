@@ -508,6 +508,8 @@ def page():
     get_properties = Properties.query.filter(Properties.pausado == False,Properties.destacado == 1).limit(9).all()
     if (get_properties is not None):
         properties_count = len(get_properties)
+        if (properties_count == 0): 
+            return redirect(url_for('index'))
         if (properties_count < 9):
             get_properties_left = Properties.query.filter(Properties.pausado == False,Properties.destacado == 0).limit(9-properties_count).all()
             for propiedades in get_properties_left:
