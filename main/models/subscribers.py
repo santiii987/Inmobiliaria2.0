@@ -17,4 +17,4 @@ class Contactquestions(db.Model):
     erased = db.Column(db.Boolean, default = False)
 
 # db.drop_all()
-db.create_all()
+# db.create_all()
