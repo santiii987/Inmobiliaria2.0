@@ -1361,7 +1361,7 @@ def login():
     admin_check = Admins.query.all() 
     username = request.form['username']
     password = request.form['userpass']
-    if admin_check is not None:
+    if admin_check is not None and admin_check:
         i = 0
         while username != admin_check[i].user and password != admin_check[i].password:
             i+=1
