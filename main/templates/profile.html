@@ -160,6 +160,7 @@
       {% endif %}
       <li>Disposición:<strong>{{ get_property.disposicion }}</strong></li>
       <li>Orientación:<strong>{{ get_property.orientacion }}</strong></li>
+      <li>Gastos comunes:<strong>{{ get_property.gastos_comunes if get_property.gastos_comunes != None else 'Preguntale!'}}</strong></li>
       <!-- if si aplican o no-->
       {% if get_property.sobre is not none %}
       <li>Sobre:<strong>{{ sobre }}</strong></li>

@@ -550,8 +550,17 @@ function nextStep(step) {
     {{form.orientacion()}}
     {%endif%}
 </div>
-
-
+<div>
+    {{form.gastos_comunes.label()}}
+    {%if form.gastos_comunes.errors%}
+    {{form.gastos_comunes()}}
+    {%for error in form.gastos_comunes.errors%}
+    <span>{{error}}</span>
+    {%endfor%}
+    {%else%}
+    {{form.gastos_comunes()}}
+    {%endif%}
+</div>
 <div>
     {{form.garaje.label()}}
     {%if form.garaje.errors%}

@@ -105,6 +105,8 @@ def store_imgs(ref,imgs):
         fext = img.filename.split('.')
         im = Image.open(img).save(str(i+1) + '.' + fext[-1],quality=50,optimize=True)
         thumb = Image.open(img).save('/thumbnails/'+str(i+1) + '.' + fext[-1],quality=15,optimize=True)
+        im.close()
+        thumb.close()
 
 def add_imgs(path_ref,img):
     files = filter_dirs(path_ref)
@@ -112,6 +114,7 @@ def add_imgs(path_ref,img):
     im = Image.open(img)
     im.save(path_ref + '/' + str(id) + '.' + im.format,quality=50,optimize=True)
     im.save(path_ref + '/thumbnails/' + str(id) + '.' + im.format,quality=15,optimize=True)
+    im.close()
 
 
 # def del_imgs(ref,id):
@@ -244,6 +247,7 @@ def assign_properties_to_from(form,get_properties):
     form.financia.data = get_properties.financia
     form.ref.data = get_properties.ref
     form.distancia_al_mar.data = get_properties.distancia_al_mar
+    form.gastos_comunes.data = get_properties.gastos_comunes
     form.descripcion.data = get_properties.descripcion
     form.precio_dolares.data = get_properties.precio_dolares
     form.precio_pesos.data = get_properties.precio_pesos
@@ -315,7 +319,8 @@ def assign_form_to_properties(get_property,form):
     get_property.propietario.apellido = form.data['apellido']
     get_property.propietario.email = form.data['email']
     get_property.propietario.telefono = form.data['telefono']     
-    get_property.operacion_id = operacion.id                                                                    
+    get_property.operacion_id = operacion.id
+    get_property.operacion_id = operacion.id                                                                     
     get_property.fecha_publicacion = date.today()                                                                                                                                                                    
     get_property.tipo_propiedad_id = tipo_propiedad.id                       
     get_property.barrio_id = barrio.id                        
@@ -332,7 +337,8 @@ def assign_form_to_properties(get_property,form):
     get_property.permuta = form.data['permuta'] if form.data['permuta'] != 2 else None                       
     get_property.financia = form.data['financia'] if form.data['financia'] != 2 else None                       
     get_property.garaje = form.data['garaje']                        
-    get_property.estado = form.data['estado']                        
+    get_property.estado = form.data['estado']           
+    get_property.gastos_comunes = form.data['gastos_comunes']             
     get_property.orientacion = form.data['orientacion']                        
     get_property.disposicion = form.data['disposicion']                        
     get_property.n_plantas = form.data['n_plantas']                                    
@@ -437,6 +443,10 @@ def index():
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
     return render_template('index-premium.html', barrios = barrios_query, 
     get_properties = p_show, paginas = paginas, pagina = 1)
+
+@app.route('/administrar')
+def admin_redirect():
+    return redirect(url_for('admin', section="home"))
 
 @app.route('/imgsPost', methods=['POST','GET'])
 @login_required
@@ -1179,6 +1189,7 @@ def insertation():
             titulo = request.form['titulo'],
             direccion = request.form['direccion'],
             descripcion = form.data['descripcion'],
+            gastos_comunes = form.data['gastos_comunes'],
             precio_dolares = abs(form.data['precio_dolares']) if form.data['precio_dolares'] else None,
             precio_pesos = abs(form.data['precio_pesos']) if form.data['precio_pesos'] else None,
             metraje_edificio = form.data['metraje_edificio'],

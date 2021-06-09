@@ -3,10 +3,11 @@ from .subscribers import *
 from .adm import *
 class Properties(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    titulo = db.Column(db.String(40), nullable = False)
+    titulo = db.Column(db.String(50), nullable = False)
     fecha_publicacion = db.Column(db.String(10), nullable = False)
     #cargar en us$ o en $ y usar CurrencyConverter para cargar el otro
     precio_dolares = db.Column(db.Integer)
+    gastos_comunes = db.Column(db.String)
     precio_pesos = db.Column(db.Integer)
     barrio_id = db.Column(db.Integer,db.ForeignKey('barrios.id'), nullable = False)
     operacion_id = db.Column(db.Integer,db.ForeignKey('operaciones.id'), nullable = False)
@@ -32,7 +33,7 @@ class Properties(db.Model):
     disposicion = db.Column(db.String(30), nullable = False)
     ######
     distancia_al_mar = db.Column(db.Integer)
-    descripcion = db.Column(db.String(600), nullable = False)
+    descripcion = db.Column(db.String(2000), nullable = False)
     direccion = db.Column(db.String(30))
     propietario_id = db.Column(db.Integer, db.ForeignKey('propietarios.id'), nullable = False)
     #phone = db.Column(db.Integer, nullable = False, unique = True)
