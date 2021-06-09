@@ -1396,7 +1396,7 @@ def login():
 def insert_unload():
     delete_uuid_dir()
     return True
-app.route('/logout')
+@app.route('/logout')
 def logout():
     session['username'] = None
     return redirect(url_for('index'))
