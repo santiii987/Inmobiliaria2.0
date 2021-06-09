@@ -2,7 +2,6 @@ from main import db
 from .subscribers import *
 from .adm import *
 class Properties(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer, primary_key=True)
     titulo = db.Column(db.String(40), nullable = False)
     fecha_publicacion = db.Column(db.String(10), nullable = False)
@@ -43,7 +42,6 @@ class Properties(db.Model):
     barrio = db.relationship('Barrios',backref='properties',lazy = 'joined')
 
 class Propietarios(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String(40), nullable = False)
     apellido = db.Column(db.String(40), nullable = False)
@@ -51,24 +49,20 @@ class Propietarios(db.Model):
     telefono = db.Column(db.Integer, nullable = False, unique = True)
 
 class Barrios(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer, primary_key=True)
     barrio = db.Column(db.String(60), nullable = False, unique = True)
 
 class Operaciones(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer, primary_key=True)
     operacion = db.Column(db.String(10), nullable = False, unique = True)
    
 
 
 class Tipo_propiedad(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer, primary_key=True)
     tipo_propiedad = db.Column(db.String(30), nullable = False, unique = True)
 
 class Seguridad(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer,db.ForeignKey('properties.id'), primary_key = True, autoincrement=True)
     alarma = db.Column(db.Boolean)
     cámaras_cctv = db.Column(db.Boolean)
@@ -80,7 +74,6 @@ class Seguridad(db.Model):
     propiedad = db.relationship('Properties',backref='seguridad',lazy = 'select')
 
 class Comfort(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer,db.ForeignKey('properties.id'), primary_key = True, autoincrement=True)
     agua_caliente = db.Column(db.Boolean)
     aire_acondicionado = db.Column(db.Boolean)

@@ -1,12 +1,10 @@
 from main import db
 
 class Subscribers(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer, primary_key=True)
     mail = db.Column(db.String(40), nullable = False, unique = True)
 
 class Contactquestions(db.Model):
-    __bind_key__ = 'admin_db'
     id = db.Column(db.Integer, primary_key=True)
     property_id = db.Column(db.Integer)
     complete_name = db.Column(db.String(40), nullable = False)

@@ -692,6 +692,16 @@ function nextStep(step) {
             form.submit() 
         }
     }
+    var host = $(location).attr('origin')
+    $(window).unload(()=>{
+        $.ajax({
+            url: host + '/insert_unload',
+            type: 'GET',
+            success : (data)=>{
+                console.log(data)
+            }
+        })
+    })
 
 </script>
 <div id="testing" class="modal-footer">

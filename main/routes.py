@@ -15,7 +15,7 @@ import math
 import shutil
 from PIL import Image
 import cProfile, pstats, io
-
+import secrets
 
 
 def profile(fnc):
@@ -73,8 +73,11 @@ def profile(fnc):
 # @app.before_request
 # def caca():
 #     sort_imgs()
-imgs_dir = os.getcwd() + '/main/static/imgs/'
-buffer_dir = imgs_dir + 'buffer/'
+
+#UTILS
+imgs_dir = os.getcwd() + '/inmobiliaria3/main/static/imgs/'
+
+#HELPERS
 def properties_mtx(properties, columns):
     print(imgs_dir)
     aux = []
@@ -91,18 +94,25 @@ def properties_mtx(properties, columns):
     #print(p_show[0])
     return p_show
 
+
 def store_imgs(ref,imgs):
     os.chdir(imgs_dir)
     os.mkdir(ref)
     os.chdir(ref)
+    os.mkdir('thumbnails')
     print(os.getcwd())
     for i,img in enumerate(imgs):
         fext = img.filename.split('.')
-        im = Image.open(img).save(str(i+1) + '.' + fext[-1],quality=15,optimize=True)
+        im = Image.open(img).save(str(i+1) + '.' + fext[-1],quality=50,optimize=True)
+        thumb = Image.open(img).save('/thumbnails/'+str(i+1) + '.' + fext[-1],quality=15,optimize=True)
+
 def add_imgs(path_ref,img):
-    id = len(os.listdir(path_ref)) + 1
+    files = filter_dirs(path_ref)
+    id = len(files) + 1
     im = Image.open(img)
-    im.save(path_ref + '/' + str(id) + '.' + im.format,quality=15,optimize=True)
+    im.save(path_ref + '/' + str(id) + '.' + im.format,quality=50,optimize=True)
+    im.save(path_ref + '/thumbnails/' + str(id) + '.' + im.format,quality=15,optimize=True)
+
 
 # def del_imgs(ref,id):
 #     id = [int(i) for i in id]
@@ -126,14 +136,22 @@ def add_imgs(path_ref,img):
 #         for j in range(idx_mapping,init_imgs):
 #             os.rename(f[j+1][0] + f[j+1][1], f[j][0] + f[j+1][1])
 #     return True
-def sort(files):
+def filter_dirs(basepath):
+    files = os.listdir(basepath)
+    for fname in files:
+        path = os.path.join(basepath, fname)
+        if os.path.isdir(path):
+            files.remove(fname)
+    return files
+def sort(basepath):
+    files = filter_dirs(basepath)
     return sorted(files,key=lambda x: int(os.path.splitext(x)[0]))
 def del_imgs(ref,id):
     path_ref = imgs_dir + ref + '/'
-    file_list = sort(os.listdir(path_ref))
+    file_list = sort(path_ref)
     print(file_list)
     os.remove(path_ref + file_list[id])
-    new_file_list = sort(os.listdir(path_ref))
+    new_file_list = sort(path_ref)
     new_file_list_lenght = len(new_file_list)
     if (new_file_list_lenght == id or new_file_list_lenght == 0):
         #Si el largo es ==id entonces id era el ultimo elemento,
@@ -148,7 +166,7 @@ def del_imgs(ref,id):
 def get_imgs(ref):
     prop_phs = []
     os.chdir(imgs_dir + ref)
-    imgs = sort(os.listdir())
+    imgs = sort(os.getcwd())
     for i in (img for i,img in enumerate(imgs) if i<15):
         ph = open(i,'rb')
         im = base64.b64encode(ph.read()).decode('utf-8')
@@ -157,8 +175,8 @@ def get_imgs(ref):
     return prop_phs
 
 def get_img(ref):
-    os.chdir(imgs_dir + ref +'/')
-    imgs = os.listdir()
+    os.chdir(imgs_dir + ref +'/thumbnails/')
+    imgs = filter_dirs(os.getcwd())
     print(imgs)
     if (len(imgs) > 0):
         ph = open(imgs[0],'rb')
@@ -192,6 +210,17 @@ def get_current_user():
     if username is not None:
         g.user = username
 
+def get_current_uuid():
+    return session.get('uuid')
+def get_current_uuid_dir():
+    return imgs_dir + '/' + session.get('uuid')
+def create_uuid_dir():
+    os.chdir(imgs_dir)
+    os.mkdir(session.get('uuid'))
+    os.mkdir(session.get('uuid') + '/thumbnails')
+def delete_uuid_dir():
+    shutil.rmtree(get_current_uuid_dir(),True)
+    os.rmdir(get_current_uuid_dir())
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -424,26 +453,32 @@ def index():
     get_properties = p_show, paginas = paginas, pagina = 1)
 
 @app.route('/imgsPost', methods=['POST','GET'])
+@login_required
 def imgPost():
     added_imgs = request.files.getlist('imgs')
     print(request.json , request.files.getlist('imgs'))
     added_imgs_count = len(added_imgs)
+    uuid_dir = get_current_uuid_dir()
     print(added_imgs[0].filename)
     #Condicional por si el input no trae ninguna imagen
     if added_imgs_count <= 15:
         for img in added_imgs:
-            add_imgs(buffer_dir,img)
+            add_imgs(uuid_dir,img)
         return "1"
     else:
         return "0"
 @app.route('/imgsDelete/<int:id>', methods=['DELETE'])
+@login_required
 def imgDelete(id):
-    del_check = del_imgs('buffer',id)
+    uuid = get_current_uuid()
+    del_check = del_imgs(uuid,id)
+    del_thumbnails_check = del_imgs(uuid + '/thumbnails',id)
     if del_check is None:
         return "0"
     return "1"
 
 @app.route('/imgsPostUpdate/<string:ref>', methods=['POST','GET'])
+@login_required
 def imgPostUpdate(ref):
     print(os.listdir(imgs_dir + ref + '/'))
     added_imgs = request.files.getlist('imgs')
@@ -458,8 +493,10 @@ def imgPostUpdate(ref):
     else:
         return "0"
 @app.route('/imgsDeleteUpdate/<string:ref>/<int:id>', methods=['DELETE'])
+@login_required
 def imgDeleteUpdate(ref,id):
     del_check = del_imgs(ref,id)
+    del_thumbnails_check = del_imgs(ref + '/thumbnails',id)
     print(os.listdir(imgs_dir + ref + '/'))
     if del_check is None:
         return "0"
@@ -500,7 +537,7 @@ def index_paginas(page,step,id):
     p_show = properties_mtx(get_properties,3)
     #print(p_show) 
     paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
-    print('                      ' , p_show[0][0][0].id)
+    print('', p_show[0][0][0].id)
     #if (id == paginas)
     return render_template('index-premium-pag.html', 
     get_properties = p_show, barrios = barrios_query, pagina = page, 
@@ -979,7 +1016,7 @@ def property_questions():
 
 @profile
 @app.route('/admin/<section>')
-#@login_required
+@login_required
 def admin(section):
     test = []
     form = PropertyForm()
@@ -988,6 +1025,9 @@ def admin(section):
     contactquestions_amount = Contactquestions.query.filter_by(read=False).count()
     if section == "insert":
         get_properties = Properties.query.with_entities(Properties.ref).all()
+        path_to_uuid = get_current_uuid_dir()
+        shutil.rmtree(path_to_uuid,True)
+        create_uuid_dir()
         print(get_properties)
         return render_template('insert.html',form=form,get_properties = get_properties,propietarios=propietarios)
     if section == "home":
@@ -1029,7 +1069,7 @@ def admin(section):
 
 @profile      
 @app.route('/update/<id>', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def update(id):
     contactquestions_amount = Contactquestions.query.filter_by(read=False).count()
     get_properties = Properties.query.get(id)
@@ -1047,13 +1087,12 @@ def about():
     
 @profile
 @app.route('/edit-property/<int:id>', methods=['POST'])
-#@login_required
+@login_required
 def edit_property(id):
     form = PropertyForm()
     flag = True
     get_property = Properties.query.get(id)
     path_to_ref = imgs_dir + '/' + get_property.ref
-    all_imgs = os.listdir(path_to_ref)
     # Check when a pic is re-changed (if is pushed to change_pic array or changed content within same index)
     #Condicional por si el input no trae ninguna imagen
     if form.validate_on_submit() and flag:       
@@ -1104,12 +1143,14 @@ def profile(id):
     get_property = get_property, fotos = fotos,
     comfort = comodidades,
     seguridad = seguridad)
+
 @app.route('/insertation', methods=['POST','GET'])
-# @login_required
+@login_required
 def insertation():
     form = PropertyForm()
-    path_to_buffer = imgs_dir + '/' + 'buffer'
-    fotos_count = len(os.listdir(path_to_buffer))
+    path_to_uuid = get_current_uuid_dir()
+    files = filter_dirs(path_to_uuid)
+    fotos_count = len(files)
     flag = True
     print('asd',form.fotos.data)
     if form.validate_on_submit():
@@ -1131,8 +1172,8 @@ def insertation():
             tipo_propiedad = Tipo_propiedad.query.filter_by(tipo_propiedad = form.data['tipo_propiedad']).first()
             print(form.fotos.data)
             path_to_ref = imgs_dir + '/' + request.form['ref']
-            os.rename(path_to_buffer,path_to_ref)
-            os.mkdir(path_to_buffer)
+            os.rename(path_to_uuid,path_to_ref)
+            os.mkdir(path_to_uuid)
             propietario_query = Propietarios.query.filter_by(telefono = form.data['telefono']).first()
             if propietario_query is None:
                 propietario_add = Propietarios(nombre = form.data['nombre'], apellido = form.data['apellido'], email = form.data['email'], telefono = form.data['telefono'])     
@@ -1222,8 +1263,9 @@ def insertation():
     propietarios = Propietarios.query.all()
     contactquestions_amount = Contactquestions.query.filter_by(read=False).count()
     get_properties = Properties.query.all()
-    return render_template('insert.html', barrios = barrios_query, propietarios=propietarios,get_properties = get_properties,    
-    form=form, questions_amount=contactquestions_amount, section="home")
+    fotos = get_imgs(session.get('uuid'))
+    return render_template('insert-update.html', barrios = barrios_query, fotos = fotos ,propietarios=propietarios,   
+    form=form, questions_amount=contactquestions_amount)
 
 
 @app.route('/insert-propietario', methods=['POST','GET'])
@@ -1328,6 +1370,7 @@ def login():
             i+=1
         if username == admin[i].user:
             session['username'] = username
+            session['uuid'] = secrets.token_urlsafe(8)
             print(g.user)
             return redirect(url_for('admin', section="home"))
         else:
@@ -1336,6 +1379,7 @@ def login():
     else:
         if username == "admin" and password == "pass":
             session['username'] = username
+            session['uuid'] = secrets.token_urlsafe(8)
             print(g.user)
             return redirect(url_for('admin', section="home"))
         else:
@@ -1351,7 +1395,11 @@ def login():
     #     flash("Usuario incorrecto")
     #     return redirect(url_for('login_page'))
 
-@app.route('/logout')
+@app.route('/insert_unload')
+def insert_unload():
+    delete_uuid_dir()
+    return True
+app.route('/logout')
 def logout():
     session['username'] = None
     return redirect(url_for('index'))

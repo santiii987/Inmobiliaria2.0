@@ -1,0 +1,747 @@
+{% extends "base-admin.html" %}
+{% block content %}
+<div class="update-father">
+    <form method='POST' action="/insertation" id='da-modal' enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div>
+            {{form.destacado.label()}}
+            {%if form.destacado.errors%}
+            {{form.destacado()}}
+            {%for error in form.destacado.errors%}
+            <span>Valor Invalido</span>
+            {%endfor%}
+            {%else%}
+            {{form.destacado()}}
+            {%endif%}
+        </div>
+        <div>
+            {{form.titulo.label()}}
+            {%if form.titulo.errors%}
+            {{form.titulo()}}
+            {%for error in form.titulo.errors%}
+            <span>Valor Invalido</span>
+            {%endfor%}
+            {%else%}
+            {{form.titulo()}}
+            {%endif%}
+        </div>
+        <div>
+            {{form.ref.label()}}
+            {%if form.ref.errors%}
+            {{form.ref()}}
+            {%for error in form.ref.errors%}
+            <span><strong style="color: red;">Valor Invalido</strong></span>
+            {%endfor%}
+            {%else%}
+            {{form.ref()}}
+            {%endif%}
+        </div>
+        <div>
+            {{form.precio_dolares.label()}}
+            {%if form.precio_dolares.errors%}
+            {{form.precio_dolares()}}
+            {%for error in form.precio_dolares.errors%}
+            <span>Valor Invalido</span>
+            {%endfor%}
+            {%else%}
+            {{form.precio_dolares()}}
+            {%endif%}
+        </div>
+        <div>
+            {{form.precio_pesos.label()}}
+            {%if form.precio_pesos.errors%}
+            {{form.precio_pesos()}}
+            {%for error in form.precio_pesos.errors%}
+            <span>Valor Invalido</span>
+            {%endfor%}
+            {%else%}
+            {{form.precio_pesos()}}
+            {%endif%}
+        </div>
+        <div class="fotos" >
+            <div class="update-fotos"
+                style="overflow-x: scroll; text-align: center;border-top: rgba(128, 128, 128, 0.363) 1px solid;border-bottom: rgba(128, 128, 128, 0.363) 1px solid;padding: 1rem;">
+                <span><h3>Fotos:  <strong><span id = 'counter'>0</span>/15</span></h3></strong>
+                <div class="rows first-row"></div>
+                <div class="rows second-row"></div>
+                <div class="rows third-row"></div>
+                {% for foto in fotos %}
+                {% if loop.index >= 6 and loop.index < 11%}
+                <script>
+                    
+                $('.second-row').append("<div class='new db_foto_up' id ='{{loop.index}}' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='data:image/png;base64,{{foto}}' id='{{loop.index}}'  height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '{{loop.index}}' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>")
+                </script>
+                {%elif loop.index >= 11%}
+                <script>
+                    $('.third-row').append("<div class='new db_foto_up' id ='{{loop.index}}' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='data:image/png;base64,{{foto}}' id='{{loop.index}}'  height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '{{loop.index}}' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>")
+                </script>
+                {%else%}
+                <script>
+                    $('.first-row').append("<div class='new db_foto_up' id ='{{loop.index}}' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='data:image/png;base64,{{foto}}' id='{{loop.index}}'  height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '{{loop.index}}' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>")
+                </script>
+                {%endif%}
+                {%endfor%}
+            </div>
+        </div>
+        <div class="rest-of-data" style="padding: 1rem;">
+            <label for="fotos">Ingresar <strong class="calltoaction" style="color:red;" >Nuevas</strong> Fotos</label> <input id="fotos" multiple="" name="pics"
+                onchange="readURL(this);" type="file">
+        </div>
+
+        <script>
+            collection = new DataTransfer();
+            collection_mapper = []
+            removed_index = []
+            addedPhs = 0
+            fotos = document.getElementsByClassName('new').length
+            console.log("Fotos: ", fotos)
+            document.getElementById('counter').innerHTML = fotos
+            file_fields = document.getElementsByName('fotos')
+            position_id = []
+            
+            class Preview{
+                constructor(img,view){
+                    this.img = img
+                    this.view = view
+                }
+                createPreview(){
+                    var newPh = "<div class='new db_foto_up' id ='" + this.img.get_id() + "' style='padding: 0.5rem;'> \
+                                <div class='dropdown'> \
+                                    <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                        <img src='" + this.view + "' id='" + this.img.get_id() + "'  height='200'> \
+                                    </a> \
+                                    <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                        <a href='#' class = '" + this.img.get_id() + "' onclick='deleteNew(this);'>Eliminar foto</a> \
+                                    </div> \
+                                </div> \
+                            </div>"
+                    return newPh
+                
+                }
+                render(rows_class, elements_per_row){
+                    var current_elements;
+                    var i = 0
+                    while (rows_class[i].children.length == elements_per_row){
+                        i++
+                    }
+                    $(this.createPreview()).appendTo(rows_class[i])
+                }
+                deletePreview(){
+        
+                }
+            }
+            class Img{
+                constructor(img,imgsArrayInst){
+                    this.img = img
+                    this.id = imgsArrayInst.add()
+                }
+                get_id(){
+                    return this.id
+                }
+                get_img(){
+                    return this.img
+                }
+        
+            }
+            class ImgsArray{
+                imgs = []
+                add_img(img){
+                    this.imgs.push(img)
+                    console.log('Img added to array')
+                }
+                get_imgs_name(){
+                    var names = []
+                    for(let img of this.imgs){
+                        names.push(img.get_img().name)
+                    }
+                    return names
+                }
+        
+                // get_imgs_view(){
+                //     var imgs = []
+                //     for (let img of this.imgs){
+                //         imgs.push(img.get_view())
+                //     } 
+                //     console.log(imgs)
+                //     return imgs
+                // }
+                to_form(){
+                    var imgsForm = new FormData()
+                    for (let img of this.imgs){
+                        imgsForm.append('imgs',img.get_img())
+                    }
+                    return imgsForm
+                }
+                postImgs(){
+                    var imgs = this.imgs
+                    $.ajax({
+                        url: "/imgsPost",
+                        type: 'post',
+                        dataType: 'json',
+                        data: this.to_form(),
+                        contentType: false,
+                        processData: false,
+                        success: function(response){
+                            console.log(response)
+                            if (response != 0){
+                                document.getElementById('counter').innerHTML = index.get_indexArray().length;
+                                for (let img of imgs){
+                                    let reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        let preview = new Preview(img,e.target.result)
+                                        preview.render($('.rows'), 5)
+                                    }
+                                    reader.readAsDataURL(img.get_img());
+                                }
+                            }else{
+                                alert('Hubo un error con las imagenes')
+                            }
+                        },
+                    });        
+                }
+            }
+            class ImgIndexing{
+                indexArray = []
+                lastIndex = 0
+                get_indexArray(){
+                    return this.indexArray
+                }
+                add(){
+                    this.lastIndex++
+                    this.indexArray.push(this.lastIndex)
+                    console.log(this.lastIndex,this.indexArray)
+                    return this.lastIndex
+                }
+                position(x){
+                    console.log(this.indexArray)
+                    return this.indexArray.indexOf(x)
+                }
+                delete(x){
+                    this.indexArray.splice(this.position(x),1)
+                }
+                deletePost(x){
+                    var self = this
+                    $.ajax({
+                        url: '/imgsDelete/' + this.position(x),
+                        type: 'delete',
+                        success: function(response){
+                            if (response != 0){
+                                document.getElementById(x).remove();
+                                self.delete(x)
+                                document.getElementById('counter').innerHTML = self.indexArray.length;
+                            }else{
+                                alert('Hubo un error con las imagenes')
+                            }
+                        },
+                    });
+                }
+            }
+            index = new ImgIndexing()
+            for(let i=1;i<=fotos;i++){
+                index.add()
+            }
+            function readURL(input) {
+                if (input.files) {
+                    fotos_count = input.files.length
+                    if (fotos + fotos_count > 15) {
+                        window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + "fotos de mas")
+                    } else {
+                        var imgs = input.files 
+                        var img;
+                        imgArray = new ImgsArray();
+                        for (let element of imgs) {
+                            console.log(element.name)
+                            img = new Img(element, index)
+                            console.log(img.get_img().name)
+                            imgArray.add_img(img)
+                        }
+                        console.log(imgArray.get_imgs_name())
+                        imgArray.postImgs()        
+                    }
+                }
+            }
+            function deleteNew(input) {
+                console.log(input.classList[0])
+                index.deletePost(Number(input.classList[0]))
+            }
+        </script>
+    <script>
+    collection = new DataTransfer();
+    collection_mapper = []
+    removed_index = []
+    addedPhs = 0
+    fotos = document.getElementsByClassName('new').length
+    console.log("Fotos: ", fotos)
+    document.getElementById('counter').innerHTML = fotos
+    file_fields = document.getElementsByName('fotos')
+    position_id = []
+
+    imgs.push(i)
+    class Preview{
+        constructor(img){
+            this.img = img
+        }
+        createPreview(img){
+            newPh = "<div class='new' id ='" + img.get_id() + "' style='padding: 0.5rem;'> \
+                        <div class='dropdown'> \
+                            <a href='#' type='button' id='dropdownMenuButton' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'> \
+                                <img src='" + img.get_img() + "' class='div-foto" + img.get_id() + "' height='200'> \
+                            </a> \
+                            <div class='dropdown-menu' style='padding:0.5rem;' aria-labelledby='dropdownMenuButton'> \
+                                <a href='#' class = '" + img.get_id() + "' onclick='deleteNew(this);'>Eliminar foto</a> \
+                            </div> \
+                        </div> \
+                    </div>"
+            return newPh
+        
+        }
+        render(rows_class, elements_per_row){
+            for (row in rows_class){
+                current_elements = row.children().length
+                if (current_elements < elements_per_row){
+                    row.append(this.createPreview(this.img))
+                }
+            }
+        }
+        deletePreview(){
+
+        }
+    }
+    class Img{
+        constructor(img,imgsArrayInst){
+            this.img = img
+            this.id = imgsArrayInst.add()
+        }
+        get_id(){
+            return this.id
+        }
+        get_img(){
+            return this.img
+        }
+        
+
+    }
+    class ImgsArray{
+        imgs = []
+        add_img(img){
+            this.imgs.push(img)
+            console.log('Img added to array')
+        }
+        get_imgs(){
+            imgs = []
+            for (img in this.imgs){
+                let reader = new FileReader();
+                reader.onload = function (e) { 
+                    imgs.push(e.target.result)
+                } 
+                reader.readAsDataURL(img);
+            }
+            return imgs
+        }
+        to_form(){
+            var imgsForm = new FormData
+            for (img in this.imgs){
+                imgsForm.append('imgs',img.get_img())
+            }
+            console.log(img)
+            return imgsForm
+        }
+        postImgs(){
+            $.ajax({
+                url: '/imgsPostUpdate',
+                type: 'post',
+                data: this.to_form(),
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if (response != 0){
+                        document.getElementById('counter').innerHTML = index.get_indexArray().length;
+                        for (img in this.get_imgs())
+                            preview = new Preview(img)
+                            preview.render($('.rows'), 5)
+                    }else{
+                        alert('Hubo un error con las imagenes')
+                    }
+                },
+            });        
+        }
+    }
+    class ImgIndexing{
+        indexArray = []
+        lastIndex = 0
+        get_indexArray(){
+            return this.indexArray
+        }
+        add(){
+            this.lastIndex++
+            indexArray.push(lastIndex)
+            return lastIndex
+        }
+        position(x){
+            return this.indexArray.indexOf(x)
+        }
+        delete(x){
+            indexArray.splice(this.position(x),1)
+        }
+        deletePost(x){
+            $.ajax({
+                url: '/imgsDeleteUpdate',
+                type: 'post',
+                data: this.position(x),
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if (response != 0){
+                        document.getElementById(x).remove();
+                        this.delete(x)
+                        document.getElementById('counter').innerHTML = this.indexArray.length;
+                    }else{
+                        alert('Hubo un error con las imagenes')
+                    }
+                },
+            }); 
+        }
+    }
+    function readURL(input) {
+        if (input.files) {
+            fotos_count = input.files.length
+            if (fotos + fotos_count > 15) {
+                window.alert("Sobrepasaste la cantidad, tienes " + (fotos + fotos_count - 15) + "fotos de mas")
+            } else {
+                var imgs = input.files 
+                imgArray = new ImgsArray()
+                for (element of imgs) {
+                    img = new Img(element, index)
+                    imgArray.add_img(img)
+                }
+                imgArray.postImgs()        
+            }
+        }
+    }
+    function deleteNew(input) {
+        index.deletePost(input.classList[0])
+    }
+
+</script>
+<label>Propietarios:</label>
+<select onchange="getProp(this.value)">
+    <option value='   '></option>
+    {% for propietario in propietarios%}
+    <!-- El nombre no puede tener espacios ni el apellido -->
+    <option value="{{propietario.nombre}} {{propietario.apellido}} {{propietario.telefono}} {{propietario.email}}">
+        {{propietario.nombre}} {{propietario.apellido}} {{propietario.telefono}}</option>
+    {%endfor%}
+</select>
+<div>
+    {{form.nombre.label()}}
+    {%if form.nombre.errors%}
+    {{form.nombre()}}
+    {%for error in form.nombre.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.nombre()}}
+    {%endif%}
+</div>
+<div>
+    {{form.apellido.label()}}
+    {%if form.apellido.errors%}
+    {{form.apellido()}}
+    {%for error in form.apellido.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.apellido()}}
+    {%endif%}
+</div>
+<div>
+    {{form.telefono.label()}}
+    {%if form.telefono.errors%}
+    {{form.telefono()}}
+    {%for error in form.telefono.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.telefono()}}
+    {%endif%}
+</div>
+<div>
+    {{form.email.label()}}
+    {%if form.email.errors%}
+    {{form.email()}}
+    {%for error in form.email.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.email()}}
+    {%endif%}
+</div>
+
+<script>
+    function getProp(prop) {
+        datos = prop.split(" ")
+        document.getElementById('nombre').value = datos[0]
+        document.getElementById("apellido").value = datos[1]
+        document.getElementById("email").value = datos[3]
+        document.getElementById("telefono").value = datos[2]
+        console.log(prop, document.getElementById('nombre'))
+
+    }
+</script>
+<div>
+    {{form.metraje_edificio.label()}}
+    {%if form.metraje_edificio.errors%}
+    {{form.metraje_edificio()}}
+    {%for error in form.metraje_edificio.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.metraje_edificio()}}
+    {%endif%}
+</div>
+<div>
+    {{form.metraje_patio.label()}}
+    {%if form.metraje_patio.errors%}
+    {{form.metraje_patio()}}
+    {%for error in form.metraje_patio.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.metraje_patio()}}
+    {%endif%}
+</div>
+<div>
+    {{form.operacion.label()}}
+    {%if form.operacion.errors%}
+    {{form.operacion()}}
+    {%for error in form.operacion.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.operacion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.tipo_propiedad.label()}}
+    {%if form.tipo_propiedad.errors%}
+    {{form.tipo_propiedad()}}
+    {%for error in form.tipo_propiedad.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.tipo_propiedad()}}
+    {%endif%}
+</div>
+<div>
+    {{form.barrio.label()}}
+    {%if form.barrio.errors%}
+    {{form.barrio()}}
+    {%for error in form.barrio.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.barrio()}}
+    {%endif%}
+</div>
+<div>
+    {{form.sobre.label()}}
+    {%if form.sobre.errors%}
+    {{form.sobre()}}
+    {%for error in form.sobre.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.sobre()}}
+    {%endif%}
+</div>
+<div>
+    {{form.direccion.label()}}
+    {%if form.direccion.errors%}
+    {{form.direccion()}}
+    {%for error in form.direccion.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.direccion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.baños.label()}}
+    {%if form.baños.errors%}
+    {{form.baños()}}
+    {%for error in form.baños.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.baños()}}
+    {%endif%}
+</div>
+<div>
+    {{form.estado.label()}}
+    {%if form.estado.errors%}
+    {{form.estado()}}
+    {%for error in form.estado.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.estado()}}
+    {%endif%}
+</div>
+<div>
+    {{form.distancia_al_mar.label()}}
+    {%if form.distancia_al_mar.errors%}
+    {{form.distancia_al_mar()}}
+    {%for error in form.distancia_al_mar.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.distancia_al_mar()}}
+    {%endif%}
+</div>
+<div>
+    {{form.dormitorios.label()}}
+    {%if form.dormitorios.errors%}
+    {{form.dormitorios()}}
+    {%for error in form.dormitorios.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.dormitorios()}}
+    {%endif%}
+</div>
+<div>
+    {{form.orientacion.label()}}
+    {%if form.orientacion.errors%}
+    {{form.orientacion()}}
+    {%for error in form.orientacion.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.orientacion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.disposicion.label()}}
+    {%if form.disposicion.errors%}
+    {{form.disposicion()}}
+    {%for error in form.disposicion.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.disposicion()}}
+    {%endif%}
+</div>
+<div>
+    {{form.garaje.label()}}
+    {%if form.garaje.errors%}
+    {{form.garaje()}}
+    {%for error in form.garaje.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.garaje()}}
+    {%endif%}
+</div>
+<div>
+    {{form.n_plantas.label()}}
+    {%if form.n_plantas.errors%}
+    {{form.n_plantas()}}
+    {%for error in form.n_plantas.errors%}
+    <span>Valor Invalido</span>
+    {%endfor%}
+    {%else%}
+    {{form.n_plantas()}}
+    {%endif%}
+    </div>
+    <div>
+        {{form.financia.label()}}
+        {%if form.financia.errors%}
+        {{form.financia()}}
+        {%for error in form.financia.errors%}
+        <span>Valor Invalido</span>
+        {%endfor%}
+        {%else%}
+        {{form.financia()}}
+        {%endif%}
+    </div>
+    <div>
+        {{form.permuta.label()}}
+        {%if form.permuta.errors%}
+        {{form.permuta()}}
+        {%for error in form.permuta.errors%}
+        <span>Valor Invalido</span>
+        {%endfor%}
+        {%else%}
+        {{form.permuta()}}
+        {%endif%}
+    </div>
+
+    <br>
+    <div class="comfort-security" styles="background-color: black;">
+        <h3>Comfort:</h3>
+        <div class="comfort" styles="background-color: black;">
+            {{form.comfort.hidden_tag()}}
+            {%for comfort in form.comfort if comfort.widget.input_type != 'hidden'%}
+            {{comfort.label()}}
+            {{comfort()}}
+            {%endfor%}
+        </div>
+        <br>
+        <h3>Seguridad:</h3>
+        <div class="security">
+            {{form.seguridad.hidden_tag()}}
+            {%for seguridad in form.seguridad if seguridad.widget.input_type != 'hidden'%}
+            {{seguridad.label()}}
+            {{seguridad()}}
+            {%endfor%}
+        </div>
+    </div>
+    <br>
+    <h3>Descripción:</h3>
+    <div>
+        {%if form.descripcion.errors%}
+        {{form.descripcion()}}
+        {%for error in form.descripcion.errors%}
+        <span>Valor Invalido</span>
+        {%endfor%}
+        {%else%}
+        {{form.descripcion()}}
+        {%endif%}
+    </div>
+    <div class="modal-footer">
+        <a type="button" href="/admin/home">Cerrar</a>
+        {{form.submit()}}
+        <div>
+
+        </div>
+        </form>
+    </div>
+  
+    {% endblock %}
