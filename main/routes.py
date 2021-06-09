@@ -506,16 +506,19 @@ def page():
     aux = []
     i = 0
     get_properties = Properties.query.filter(Properties.pausado == False,Properties.destacado == 1).limit(9).all()
-    properties_count = len(get_properties) if get_properties is not None else 0
-    if (properties_count < 9):
-        get_properties_left = Properties.query.filter(Properties.pausado == False,Properties.destacado == 0).limit(9-properties_count).all()
-        for propiedades in get_properties_left:
-            get_properties.append(propiedades)
-    #print(get_properties)
-    paginas = Properties.query.count()
-    p_show = properties_mtx(get_properties,3)
-    #print(p_show[0])
-    paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
+    if (get_properties is not None):
+        properties_count = len(get_properties)
+        if (properties_count < 9):
+            get_properties_left = Properties.query.filter(Properties.pausado == False,Properties.destacado == 0).limit(9-properties_count).all()
+            for propiedades in get_properties_left:
+                get_properties.append(propiedades)
+        #print(get_properties)
+        paginas = Properties.query.count()
+        p_show = properties_mtx(get_properties,3)
+        #print(p_show[0])
+        paginas = math.ceil(int(paginas)/9) if paginas != '0' else 1
+    else:
+        return redirect(url_for('index'))
     return render_template('index-premium-pag.html', barrios = barrios_query, 
     get_properties = p_show, paginas = paginas, pagina = 1,operacion_title = "Todas las propiedades")
 
