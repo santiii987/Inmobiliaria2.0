@@ -15,7 +15,7 @@ app.secret_key = secret_key
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_ECHO'] = False
 #app.config['SQLALCHEMY_DATABASE_URI'] = (os.environ['DATABASE_URL'])
-app.config['SQLALCHEMY_DATABASE_URI'] =  'mysql+pymysql://root:santi987@localhost/inmobiliaria' 
+app.config['SQLALCHEMY_DATABASE_URI'] =  'mysql+pymysql://manuu307:8UQHX2AxU7b@manuu307.mysql.pythonanywhere-services.com/pallaresyasociados' 
 #'sqlite:///database/database_two.db'
 app.config['WTF_CSRF_ENABLED'] = False
 
