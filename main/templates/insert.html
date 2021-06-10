@@ -48,12 +48,12 @@
         <div>
             {{form.precio_dolares.label()}}
             {%if form.precio_dolares.errors%}
-            {{form.precio_dolares()}}
+            <input id="precio_dolares" name="precio_dolares" type="number">
             {%for error in form.precio_dolares.errors%}
             <strong style="color: red;"><span>{{error}}</span></strong>
             {%endfor%}
             {%else%}
-            {{form.precio_dolares()}}
+            <input id="precio_dolares" name="precio_dolares" type="number">
             {%endif%}
         </div>
 
