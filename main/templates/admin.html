@@ -102,7 +102,7 @@
         <tbody>
             {% for propiedades in get_properties %}
             <tr>
-                <td style="vertical-align: middle;" class="inmueble"><a href="/profile-admin/{{propiedades[0].id}}"><img src="data:image/png;base64,{{ propiedades[1] }}" alt=""
+                <td style="vertical-align: middle;" class="inmueble"><a href="/profile/{{propiedades[0].id}}"><img src="data:image/png;base64,{{ propiedades[1] }}" alt=""
                     style="width: 150px;"></a><br> {{ propiedades[0].direccion }}</td>
                 <td style="vertical-align: middle;font-size: 80%;" class="inmueble"> {{ propiedades[0].titulo }}</td>
                 <td style="vertical-align: middle;font-size: 80%;" class="inmueble"> {{ propiedades[0].ref }}</td>
